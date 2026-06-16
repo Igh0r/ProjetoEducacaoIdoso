@@ -27,21 +27,35 @@ Este projeto transforma o material original da pasta `sourceMaterial` em um apli
 ## Estrutura técnica
 
 ```text
-lib/main.dart             # Aplicativo Flutter, telas, modelos, dados e componentes reutilizáveis.
-pubspec.yaml              # Metadados e dependências Flutter.
-analysis_options.yaml     # Regras de lint para qualidade de código.
-test/widget_test.dart     # Teste básico de renderização da tela inicial.
-sourceMaterial/           # Material React/Figma original usado como referência.
-PROJETO.md                # Descrição completa do produto e arquitetura.
-PLANEJAMENTO.md           # Plano de evolução e entregas.
+lib/main.dart                                      # Bootstrap, imports e composição dos módulos.
+lib/app/theme/                                    # Tema visual, cores e Material 3.
+lib/core/state/                                   # Estado de sessão e orquestração de progresso.
+lib/features/auth/presentation/                   # Tela de entrada simplificada.
+lib/features/navigation/presentation/             # Navegação inferior principal.
+lib/features/learning/models/                     # Modelos de aula, categoria, passo e quiz.
+lib/features/learning/data/                       # Conteúdo local das aulas e quizzes.
+lib/features/learning/repositories/               # Contratos e fonte local de aulas.
+lib/features/learning/presentation/               # Telas e widgets da seção Aprender.
+lib/features/apps/models|data|services|presentation/ # Lançador educativo de apps úteis.
+lib/features/assistant/models|services|presentation/ # Assistente local com respostas determinísticas.
+lib/features/progress/repositories|services|presentation/ # Progresso em memória e cálculos de estudo.
+lib/features/profile/presentation/                # Ajustes de acessibilidade.
+lib/shared/widgets/                               # Componentes reutilizáveis para idosos.
+test/features/                                    # Testes unitários de progresso e aprendizado.
+test/widget_test.dart                             # Teste básico de renderização da tela inicial.
+sourceMaterial/                                   # Material React/Figma original usado como referência.
 ```
 
-## Dependências
+> Observação: os módulos Flutter foram separados em arquivos por feature e camada, preservando o comportamento do protótipo. A persistência ainda é em memória, mas agora existe uma camada de repository/service para futura troca por armazenamento local.
 
-- `flutter` SDK.
-- `cupertino_icons` para compatibilidade com ícones iOS.
-- `flutter_lints` para análise estática.
-- `flutter_test` para testes de widget.
+## Camadas
+
+- **Models**: representam entidades simples, como `Lesson`, `LessonCategory`, `LessonStep`, `QuizQuestion`, `AppItem` e `ChatMessage`.
+- **Data**: concentra dados locais de aulas, quizzes e grupos de apps úteis.
+- **Repositories**: abstraem acesso a dados. Hoje usam memória/dados locais; futuramente podem usar banco local ou `shared_preferences`.
+- **Services**: concentram regras reutilizáveis, como cálculo de progresso, resposta do assistente e mensagens do lançador de apps.
+- **Presentation**: contém telas e widgets de cada feature.
+- **Shared widgets**: reúne componentes acessíveis e reutilizáveis, como botões grandes, cards informativos, alertas e banner de progresso.
 
 ## Como executar
 
@@ -59,10 +73,25 @@ flutter analyze
 flutter test
 ```
 
+## Como adicionar uma nova aula
+
+1. Abra `lib/features/learning/data/lesson_seed_data.dart`.
+2. Escolha a categoria adequada em `categories`.
+3. Adicione um novo `Lesson` com `id` único, título, descrição, duração, passos e quiz.
+4. Use passos curtos, dicas práticas e avisos quando houver risco de segurança, saúde ou dinheiro.
+5. Execute os testes para garantir IDs únicos e conteúdo mínimo.
+
+## Como adicionar um novo app útil
+
+1. Abra `lib/features/apps/data/app_seed_data.dart`.
+2. Adicione um `AppItem` no grupo apropriado.
+3. Defina rótulo curto, emoji, cor e mensagem educativa.
+4. Se houver abertura real de links/apps no futuro, implemente a regra em `AppLaunchService`.
+
 ## Decisões de design
 
 - **Sem login real** nesta primeira entrega: reduz complexidade e facilita uso por idosos em protótipos.
-- **Estado em memória**: progresso dura durante a sessão. Persistência local pode ser adicionada na próxima fase.
+- **Estado em memória**: progresso dura durante a sessão. A camada de repository permite evoluir para persistência local.
 - **Conteúdo local**: aulas e quizzes ficam embutidos para funcionar offline e sem conta externa.
 - **Sem IA externa**: o assistente usa respostas locais para evitar custo, latência e dependência de internet.
 
@@ -72,4 +101,4 @@ flutter test
 - Adicionar leitura em voz alta e comandos por voz.
 - Integrar abertura real de aplicativos/links com `url_launcher`.
 - Criar onboarding para cadastro de familiar/cuidador.
-- Separar `lib/main.dart` em módulos (`models`, `data`, `screens`, `widgets`) conforme o app crescer.
+- Adicionar revisão detalhada de erros do quiz com histórico por tentativa.

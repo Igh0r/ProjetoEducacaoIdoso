@@ -4,13 +4,13 @@
 
 - Criar projeto Flutter com Material 3.
 - Definir tema visual de alto contraste inspirado no material original.
-- Criar componentes reutilizáveis: botões grandes, cartões informativos, alertas e barra de progresso.
-- Migrar categorias, aulas e quizzes principais para estruturas Dart.
+- Criar componentes reutilizáveis: botões grandes, cartões informativos, alertas e barra de progresso. **Concluído na modularização atual.**
+- Migrar categorias, aulas e quizzes principais para estruturas Dart. **Concluído, com dados centralizados na feature de aprendizado.**
 - Entregar navegação principal por barra inferior.
 
 ## Fase 2 — Experiência educacional
 
-- Expandir conteúdo de cada aula com exemplos reais, imagens e vídeos curtos.
+- Expandir conteúdo de cada aula com exemplos reais, imagens e vídeos curtos. **Iniciado com aulas específicas de gov.br, PIX, remédios, golpes e internet banking.**
 - Melhorar feedback dos quizzes com revisão de erros.
 - Adicionar conquistas, medalhas e lembretes de continuidade.
 - Criar modo “repetir aula” sem alterar progresso.
@@ -42,7 +42,7 @@
 - A navegação principal contém Aprender, Apps, Ajuda, Progresso e Perfil.
 - O usuário consegue abrir categoria, concluir passos, responder quiz e ver progresso.
 - O visual usa fontes grandes, alto contraste e botões fáceis de tocar.
-- O projeto contém documentação na raiz e teste básico de widget.
+- O projeto contém documentação na raiz, teste básico de widget e testes unitários de aprendizado/progresso.
 
 ## Riscos e mitigação
 

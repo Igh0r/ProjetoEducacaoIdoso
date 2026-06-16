@@ -25,8 +25,7 @@ class ProgressPage extends StatelessWidget {
             const SizedBox(height: 10),
             if (appState.completedLessons.isEmpty) const InfoCard(icon: '🌱', title: 'Comece hoje', text: 'Conclua sua primeira aula para ver seu histórico aqui.'),
             ...appState.completedLessons.map((id) {
-              final lesson = lessonRepository.findById(id);
-              if (lesson == null) return const SizedBox.shrink();
+              final lesson = lessonById(id)!;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: InfoCard(icon: '✅', title: lesson.title, text: 'Quiz: ${appState.quizScores[id] ?? 0}/${lesson.quiz.length} • ${lesson.duration}'),

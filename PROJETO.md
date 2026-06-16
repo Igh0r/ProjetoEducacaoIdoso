@@ -102,7 +102,3 @@ flutter test
 - Integrar abertura real de aplicativos/links com `url_launcher`.
 - Criar onboarding para cadastro de familiar/cuidador.
 - Adicionar revisão detalhada de erros do quiz com histórico por tentativa.
-
-## Versionamento
-
-As mudanças funcionais e próximas versões planejadas são registradas em `AlteraçõesVersionamento.md`.

@@ -10,9 +10,7 @@ class EducacaoIdosoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppStateScope(
-      state: appState,
-      child: MaterialApp(
+    return MaterialApp(
       title: 'Educação para Idosos',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -36,7 +34,6 @@ class EducacaoIdosoApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const LoginPage(),
-      ),
     );
   }
 }

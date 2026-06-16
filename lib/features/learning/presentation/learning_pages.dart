@@ -148,30 +148,15 @@ class LessonPage extends StatefulWidget {
 }
 
 class _LessonPageState extends State<LessonPage> {
-  late final LessonSessionController session;
-  bool savedProgress = false;
-
-  @override
-  void initState() {
-    super.initState();
-    session = LessonSessionController(widget.lesson);
-  }
-
-  @override
-  void dispose() {
-    session.dispose();
-    super.dispose();
-  }
-
-  void _completeWithScore(int score) {
-    if (savedProgress) return;
-    appState.completeLesson(widget.lesson.id, score);
-    savedProgress = true;
-  }
+  int step = 0;
+  int quiz = 0;
+  int score = 0;
+  int? selected;
+  LessonPhase phase = LessonPhase.steps;
 
   @override
   Widget build(BuildContext context) {
-    switch (session.phase) {
+    switch (phase) {
       case LessonPhase.steps:
         return _stepView(context);
       case LessonPhase.quizIntro:
@@ -184,11 +169,11 @@ class _LessonPageState extends State<LessonPage> {
   }
 
   Widget _stepView(BuildContext context) {
-    final item = session.step;
-    final progress = (session.currentStep + 1) / widget.lesson.steps.length;
+    final item = widget.lesson.steps[step];
+    final progress = (step + 1) / widget.lesson.steps.length;
     return AppShell(
       title: widget.lesson.title,
-      subtitle: 'Passo ${session.currentStep + 1} de ${widget.lesson.steps.length}',
+      subtitle: 'Passo ${step + 1} de ${widget.lesson.steps.length}',
       showBack: true,
       child: Padding(
         padding: const EdgeInsets.all(18),
@@ -221,21 +206,27 @@ class _LessonPageState extends State<LessonPage> {
           ),
           const SizedBox(height: 14),
           Row(children: [
-            if (session.currentStep > 0)
+            if (step > 0)
               Expanded(
                 child: SeniorButton.secondary(
                   label: 'Voltar',
                   icon: Icons.arrow_back,
-                  onPressed: () => setState(session.goToPreviousStep),
+                  onPressed: () => setState(() => step--),
                 ),
               ),
-            if (session.currentStep > 0) const SizedBox(width: 12),
+            if (step > 0) const SizedBox(width: 12),
             Expanded(
               flex: 2,
               child: SeniorButton(
-                label: session.isLastStep ? 'Fazer quiz' : 'Próximo',
+                label: step == widget.lesson.steps.length - 1 ? 'Fazer quiz' : 'Próximo',
                 icon: Icons.arrow_forward,
-                onPressed: () => setState(session.goToNextStep),
+                onPressed: () => setState(() {
+                  if (step == widget.lesson.steps.length - 1) {
+                    phase = LessonPhase.quizIntro;
+                  } else {
+                    step++;
+                  }
+                }),
               ),
             ),
           ]),
@@ -254,14 +245,14 @@ class _LessonPageState extends State<LessonPage> {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const Text('Você completou os passos. Agora responda perguntas simples para fixar o aprendizado.', textAlign: TextAlign.center, style: TextStyle(fontSize: 24)),
             const SizedBox(height: 24),
-            const InfoCard(icon: '✅', title: 'Como funciona', text: 'Toque em uma resposta. Você verá uma explicação após escolher e uma revisão no final.'),
+            const InfoCard(icon: '✅', title: 'Como funciona', text: 'Toque em uma resposta. Você verá uma explicação após escolher.'),
             const SizedBox(height: 24),
-            SeniorButton(label: 'Começar quiz', icon: Icons.psychology, onPressed: () => setState(session.startQuiz)),
+            SeniorButton(label: 'Começar quiz', icon: Icons.psychology, onPressed: () => setState(() => phase = LessonPhase.quiz)),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () {
-                _completeWithScore(0);
-                setState(session.skipQuiz);
+                appState.completeLesson(widget.lesson.id, 0);
+                setState(() => phase = LessonPhase.done);
               },
               child: const Text('Pular quiz e concluir', style: TextStyle(fontSize: 20)),
             ),
@@ -272,16 +263,16 @@ class _LessonPageState extends State<LessonPage> {
   }
 
   Widget _quizView(BuildContext context) {
-    final q = session.question;
-    final answered = session.selectedAnswer != null;
+    final q = widget.lesson.quiz[quiz];
+    final answered = selected != null;
     return AppShell(
-      title: 'Quiz ${session.currentQuestion + 1}/${widget.lesson.quiz.length}',
+      title: 'Quiz ${quiz + 1}/${widget.lesson.quiz.length}',
       subtitle: widget.lesson.title,
       showBack: true,
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(children: [
-          LinearProgressIndicator(value: (session.currentQuestion + 1) / widget.lesson.quiz.length, minHeight: 12, borderRadius: BorderRadius.circular(99)),
+          LinearProgressIndicator(value: (quiz + 1) / widget.lesson.quiz.length, minHeight: 12, borderRadius: BorderRadius.circular(99)),
           const SizedBox(height: 18),
           Expanded(
             child: SingleChildScrollView(
@@ -295,7 +286,7 @@ class _LessonPageState extends State<LessonPage> {
                 const SizedBox(height: 16),
                 ...List.generate(q.options.length, (i) {
                   final isCorrect = i == q.correct;
-                  final isSelected = i == session.selectedAnswer;
+                  final isSelected = i == selected;
                   Color color = _panel;
                   if (answered && isCorrect) color = Colors.green.shade700;
                   if (answered && isSelected && !isCorrect) color = Colors.red.shade700;
@@ -309,23 +300,33 @@ class _LessonPageState extends State<LessonPage> {
                           padding: const EdgeInsets.all(20),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
                         ),
-                        onPressed: answered ? null : () => setState(() => session.selectAnswer(i)),
+                        onPressed: answered
+                            ? null
+                            : () => setState(() {
+                                  selected = i;
+                                  if (isCorrect) score++;
+                                }),
                         child: Text(q.options[i], textAlign: TextAlign.center, style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800)),
                       ),
                     ),
                   );
                 }),
-                if (answered) InfoCard(icon: session.selectedAnswer == q.correct ? '🎉' : '💡', title: session.selectedAnswer == q.correct ? 'Muito bem!' : 'Vamos aprender', text: q.explanation),
+                if (answered) InfoCard(icon: selected == q.correct ? '🎉' : '💡', title: selected == q.correct ? 'Muito bem!' : 'Vamos aprender', text: q.explanation),
               ]),
             ),
           ),
           if (answered)
             SeniorButton(
-              label: session.isLastQuestion ? 'Ver resultado' : 'Próxima pergunta',
+              label: quiz == widget.lesson.quiz.length - 1 ? 'Ver resultado' : 'Próxima pergunta',
               icon: Icons.arrow_forward,
               onPressed: () => setState(() {
-                if (session.isLastQuestion) _completeWithScore(session.score);
-                session.goToNextQuestion();
+                if (quiz == widget.lesson.quiz.length - 1) {
+                  appState.completeLesson(widget.lesson.id, score);
+                  phase = LessonPhase.done;
+                } else {
+                  quiz++;
+                  selected = null;
+                }
               }),
             ),
         ]),
@@ -335,37 +336,17 @@ class _LessonPageState extends State<LessonPage> {
 
   Widget _doneView(BuildContext context) {
     final total = widget.lesson.quiz.length;
-    final attempt = session.buildAttempt();
     return AppShell(
       title: 'Aula concluída!',
       showBack: true,
       child: Center(
-        child: SingleChildScrollView(
+        child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const Text('🎉', style: TextStyle(fontSize: 96)),
             Text(widget.lesson.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 16),
-            Text('Resultado do quiz: ${attempt.score}/$total', style: const TextStyle(fontSize: 28, color: _line, fontWeight: FontWeight.w900)),
-            const SizedBox(height: 20),
-            if (attempt.selectedAnswers.isNotEmpty) ...[
-              Text('Revisão do quiz', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 12),
-              ...List.generate(widget.lesson.quiz.length, (index) {
-                final q = widget.lesson.quiz[index];
-                final selectedIndex = attempt.selectedAnswers[index];
-                final selectedText = selectedIndex == null ? 'Não respondida' : q.options[selectedIndex];
-                final correctText = q.options[q.correct];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: InfoCard(
-                    icon: selectedIndex == q.correct ? '✅' : '💡',
-                    title: q.question,
-                    text: 'Sua resposta: $selectedText\nCorreta: $correctText\n${q.explanation}',
-                  ),
-                );
-              }),
-            ],
+            Text('Resultado do quiz: $score/$total', style: const TextStyle(fontSize: 28, color: _line, fontWeight: FontWeight.w900)),
             const SizedBox(height: 24),
             SeniorButton(label: 'Voltar para lições', icon: Icons.check, onPressed: () => Navigator.of(context).pop()),
           ]),
@@ -374,3 +355,4 @@ class _LessonPageState extends State<LessonPage> {
     );
   }
 }
+

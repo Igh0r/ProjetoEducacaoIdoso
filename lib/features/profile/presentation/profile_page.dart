@@ -28,18 +28,6 @@ class ProfilePage extends StatelessWidget {
             title: const Text('Alto contraste', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             subtitle: const Text('Mantém fundo escuro e destaque amarelo.'),
           ),
-          SwitchListTile(
-            value: appState.accessibilitySettings.lowLightTheme,
-            onChanged: (value) => appState.updateAccessibility(appState.accessibilitySettings.copyWith(lowLightTheme: value)),
-            title: const Text('Tema baixa luminosidade', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            subtitle: const Text('Preparado para futura variação menos intensa do tema.'),
-          ),
-          SwitchListTile(
-            value: appState.accessibilitySettings.readAloudEnabled,
-            onChanged: (value) => appState.updateAccessibility(appState.accessibilitySettings.copyWith(readAloudEnabled: value)),
-            title: const Text('Leitura em voz alta', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            subtitle: const Text('Preferência salva em sessão para futura integração de voz.'),
-          ),
           const SizedBox(height: 16),
           const EmergencyCard(),
           const SizedBox(height: 16),

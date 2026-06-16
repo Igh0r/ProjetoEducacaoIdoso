@@ -4,18 +4,14 @@ class AppState extends ChangeNotifier {
   AppState({
     ProgressRepository? progressRepository,
     ProgressService? progressService,
-    AccessibilitySettings? accessibilitySettings,
   })  : _progressRepository = progressRepository ?? InMemoryProgressRepository(),
-        _progressService = progressService ?? progressServiceDefault,
-        _accessibilitySettings = accessibilitySettings ?? const AccessibilitySettings();
+        _progressService = progressService ?? progressServiceDefault;
 
   final ProgressRepository _progressRepository;
   final ProgressService _progressService;
-  AccessibilitySettings _accessibilitySettings;
+  double textScale = 1;
+  bool highContrast = true;
 
-  AccessibilitySettings get accessibilitySettings => _accessibilitySettings;
-  double get textScale => _accessibilitySettings.textScale;
-  bool get highContrast => _accessibilitySettings.highContrast;
   Set<String> get completedLessons => _progressRepository.getCompletedLessons();
   Map<String, int> get quizScores => _progressRepository.getQuizScores();
   int get totalLessons => _progressService.totalLessons();
@@ -27,17 +23,12 @@ class AppState extends ChangeNotifier {
   }
 
   void toggleContrast() {
-    _accessibilitySettings = _accessibilitySettings.copyWith(highContrast: !highContrast);
+    highContrast = !highContrast;
     notifyListeners();
   }
 
   void setTextScale(double value) {
-    _accessibilitySettings = _accessibilitySettings.copyWith(textScale: value);
-    notifyListeners();
-  }
-
-  void updateAccessibility(AccessibilitySettings settings) {
-    _accessibilitySettings = settings;
+    textScale = value;
     notifyListeners();
   }
 }

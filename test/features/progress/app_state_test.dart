@@ -31,22 +31,4 @@ void main() {
 
     expect(state.totalMinutes, 14);
   });
-
-  test('protege coleções internas contra mutação externa', () {
-    final state = AppState();
-    state.completeLesson('tech-1', 2);
-
-    expect(() => state.completedLessons.add('tech-2'), throwsUnsupportedError);
-    expect(() => state.quizScores['tech-2'] = 1, throwsUnsupportedError);
-  });
-
-  test('atualiza preferências de acessibilidade', () {
-    final state = AppState();
-
-    state.updateAccessibility(state.accessibilitySettings.copyWith(readAloudEnabled: true, textScale: 1.35));
-
-    expect(state.accessibilitySettings.readAloudEnabled, isTrue);
-    expect(state.textScale, 1.35);
-  });
-
 }

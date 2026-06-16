@@ -10,7 +10,7 @@ class AppLauncherPage extends StatelessWidget {
       subtitle: 'Toque em um ícone para lembrar a função.',
       child: ListView(
         padding: const EdgeInsets.all(16),
-        children: appRepository.getGroups().map((group) => AppGroupSection(group: group)).toList(),
+        children: appGroups.map((group) => AppGroupSection(group: group)).toList(),
       ),
     );
   }
@@ -19,26 +19,6 @@ class AppLauncherPage extends StatelessWidget {
 class AppGroupSection extends StatelessWidget {
   const AppGroupSection({required this.group, super.key});
   final AppGroup group;
-
-
-  void _showPlannedAction(BuildContext context, AppItem app) {
-    final action = appLaunchService.plan(app);
-    if (!action.requiresConfirmation) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(action.message), behavior: SnackBarBehavior.floating));
-      return;
-    }
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(action.title),
-        content: Text(action.message, style: const TextStyle(fontSize: 18)),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancelar')),
-          FilledButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Entendi')),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +36,7 @@ class AppGroupSection extends StatelessWidget {
             final app = group.apps[index];
             return InkWell(
               borderRadius: BorderRadius.circular(24),
-              onTap: () => _showPlannedAction(context, app),
+              onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appLaunchService.launchMessage(app)), behavior: SnackBarBehavior.floating)),
               child: Container(
                 decoration: BoxDecoration(color: app.color, borderRadius: BorderRadius.circular(24)),
                 padding: const EdgeInsets.all(10),

@@ -21,12 +21,10 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: AppStateScope.of(context),
-      builder: (context, _) {
-        final state = AppStateScope.of(context);
-        return MediaQuery(
+      animation: appState,
+      builder: (context, _) => MediaQuery(
         data: MediaQuery.of(context).copyWith(
-          textScaler: accessibilityService.textScalerFor(state.accessibilitySettings),
+          textScaler: TextScaler.linear(appState.textScale),
         ),
         child: Scaffold(
           body: pages[index],
@@ -45,8 +43,7 @@ class _MainNavigationState extends State<MainNavigation> {
             ],
           ),
         ),
-      );
-      },
+      ),
     );
   }
 }

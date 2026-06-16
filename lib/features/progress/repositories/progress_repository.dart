@@ -11,10 +11,10 @@ class InMemoryProgressRepository implements ProgressRepository {
   final Map<String, int> _quizScores = <String, int>{};
 
   @override
-  Set<String> getCompletedLessons() => Set.unmodifiable(_completedLessons);
+  Set<String> getCompletedLessons() => _completedLessons;
 
   @override
-  Map<String, int> getQuizScores() => Map.unmodifiable(_quizScores);
+  Map<String, int> getQuizScores() => _quizScores;
 
   @override
   void completeLesson(String lessonId, int score) {

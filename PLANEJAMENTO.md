@@ -49,3 +49,20 @@
 - **Ambiente sem Flutter SDK**: documentar comandos e validar estrutura por revisão de arquivos.
 - **Conteúdo sensível de saúde/finanças**: usar linguagem educativa e orientar consulta a profissionais/canais oficiais.
 - **Sobrecarga cognitiva**: manter textos curtos, cards grandes e poucas ações por tela.
+
+## Próxima milestone técnica
+
+1. **Arquitetura e estado**
+   - Evoluir de `part` files para imports Dart independentes.
+   - Manter `AppStateScope` como ponto de injeção de estado para testes e futuras sessões persistidas.
+2. **Aprendizado**
+   - Usar `LessonSessionController` para centralizar sessão de aula, quiz, pontuação e revisão.
+   - Expandir gradualmente os conteúdos que ainda usam `standardSteps` e `standardQuiz`.
+3. **Persistência**
+   - Implementar `ProgressRepository` persistente com armazenamento local.
+   - Salvar progresso, pontuação e preferências de acessibilidade.
+4. **Integrações seguras**
+   - Transformar `PlannedAppAction` em execução real com confirmação, usando links oficiais, telefone e mapas.
+5. **Testes obrigatórios**
+   - Manter testes unitários de services/controllers.
+   - Adicionar testes de widget para navegação, aula, quiz, perfil e ações de apps.

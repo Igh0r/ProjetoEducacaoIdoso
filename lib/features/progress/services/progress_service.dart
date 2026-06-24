@@ -1,4 +1,4 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:educacao_idoso/features/learning/repositories/lesson_repository.dart';
 
 class ProgressService {
   const ProgressService(this.lessonRepository);

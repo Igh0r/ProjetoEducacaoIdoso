@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
+import 'package:sqflite/sqflite.dart';
 
 part 'app/theme/app_theme.dart';
 part 'features/learning/models/learning_models.dart';
@@ -27,4 +29,10 @@ part 'features/assistant/presentation/assistant_page.dart';
 part 'features/progress/presentation/progress_page.dart';
 part 'features/profile/presentation/profile_page.dart';
 
-void main() => runApp(const EducacaoIdosoApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final progressRepository = SqliteProgressRepository();
+  await progressRepository.init();
+  appState = AppState(progressRepository: progressRepository);
+  runApp(const EducacaoIdosoApp());
+}

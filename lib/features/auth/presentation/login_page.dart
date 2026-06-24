@@ -1,4 +1,6 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/features/navigation/presentation/main_navigation.dart';
+import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -21,7 +23,7 @@ class LoginPage extends StatelessWidget {
                 const Text(
                   'Aprenda tecnologia, saúde, cidadania e finanças no seu ritmo, com letras grandes e passos simples.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 22, color: _muted, height: 1.35),
+                  style: TextStyle(fontSize: 22, color: appMutedTextColor, height: 1.35),
                 ),
                 const SizedBox(height: 28),
                 SeniorButton(

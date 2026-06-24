@@ -1,4 +1,4 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
 
 enum LessonPhase { steps, quizIntro, quiz, done }
 

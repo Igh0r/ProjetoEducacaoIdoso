@@ -1,4 +1,5 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/features/apps/models/app_models.dart';
 
 final appGroups = <AppGroup>[
   AppGroup('📞 Comunicação', [

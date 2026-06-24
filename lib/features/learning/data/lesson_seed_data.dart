@@ -1,4 +1,5 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/features/learning/models/learning_models.dart';
 
 List<LessonStep> standardSteps(String topic, String emoji) => [
       LessonStep('Entenda o objetivo', 'Nesta aula você aprende $topic com calma, usando palavras simples e exemplos do dia a dia.', emoji, tip: 'Reserve alguns minutos e mantenha o celular carregado.'),

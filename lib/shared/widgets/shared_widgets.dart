@@ -144,11 +144,15 @@ class StatCard extends StatelessWidget {
 }
 
 class EmergencyCard extends StatelessWidget {
-  const EmergencyCard({super.key});
+  const EmergencyCard({this.profile, super.key});
+  final UserProfile? profile;
 
   @override
   Widget build(BuildContext context) {
-    return const WarningCard(text: 'Emergência: SAMU 192 • Bombeiros 193 • Polícia 190 • CVV 188. Em risco imediato, ligue para o serviço adequado.');
+    final trusted = profile?.trustedContactLabel ?? appState.userProfile.trustedContactLabel;
+    return WarningCard(
+      text: 'Emergência: SAMU 192 • Bombeiros 193 • Polícia 190 • CVV 188. Em risco imediato, ligue para o serviço adequado. Em dúvidas sobre PIX, golpes, segurança ou dados sensíveis, pare e confirme com $trusted.',
+    );
   }
 }
 

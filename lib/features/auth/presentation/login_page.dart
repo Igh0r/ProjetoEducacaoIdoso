@@ -27,17 +27,28 @@ class LoginPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
                 SeniorButton(
-                  label: 'Entrar no aplicativo',
+                  label: 'Entrar sem cadastro',
                   icon: Icons.login,
                   onPressed: () => Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => const MainNavigation()),
                   ),
                 ),
+                const SizedBox(height: 12),
+                SeniorButton.secondary(
+                  label: 'Preencher perfil opcional',
+                  icon: Icons.person_add_alt_1,
+                  onPressed: () async {
+                    await showProfileEditor(context, appState.userProfile);
+                    if (context.mounted) {
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const MainNavigation()));
+                    }
+                  },
+                ),
                 const SizedBox(height: 16),
                 const InfoCard(
                   icon: '🔒',
-                  title: 'Seguro e acolhedor',
-                  text: 'Este protótipo usa login simplificado para facilitar testes e demonstrações.',
+                  title: 'Privacidade desde o início',
+                  text: 'O cadastro é opcional. Quando preenchido, fica salvo somente neste aparelho para lembrar seu contato de confiança e preferências.',
                 ),
               ],
             ),

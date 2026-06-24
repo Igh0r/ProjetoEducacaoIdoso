@@ -1,5 +1,3 @@
-part of 'package:educacao_idoso/main.dart';
-
 abstract class ProgressRepository {
   Set<String> getCompletedLessons();
   Map<String, int> getQuizScores();
@@ -16,10 +14,10 @@ class InMemoryProgressRepository implements ProgressRepository {
   final Map<String, List<QuizAttempt>> _quizAttempts = <String, List<QuizAttempt>>{};
 
   @override
-  Set<String> getCompletedLessons() => _completedLessons;
+  Set<String> getCompletedLessons() => Set.unmodifiable(_completedLessons);
 
   @override
-  Map<String, int> getQuizScores() => _quizScores;
+  Map<String, int> getQuizScores() => Map.unmodifiable(_quizScores);
 
   @override
   Map<String, List<QuizAttempt>> getQuizAttempts() => _quizAttempts;
@@ -42,6 +40,27 @@ class InMemoryProgressRepository implements ProgressRepository {
   void completeLesson(String lessonId, int score) {
     _completedLessons.add(lessonId);
     _quizScores[lessonId] = score;
+
+    final db = _database;
+    if (db == null) return;
+
+    unawaited(db.insert(
+      _completedLessonsTable,
+      <String, Object?>{
+        'lesson_id': lessonId,
+        'score': score,
+        'completed_at': DateTime.now().toIso8601String(),
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    ));
+  }
+
+  @override
+  AccessibilitySettings getAccessibilitySettings() => AccessibilitySettings.fromLocalProgressJson(_localProgressAccessibility);
+
+  @override
+  void saveAccessibilitySettings(AccessibilitySettings settings) {
+    _localProgressAccessibility = settings.toLocalProgressJson();
   }
 
   @override

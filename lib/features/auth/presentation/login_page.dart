@@ -1,6 +1,9 @@
+import 'package:educacao_idoso/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:educacao_idoso/features/navigation/presentation/main_navigation.dart';
 import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
+import 'package:educacao_idoso/core/state/app_state.dart';
+import 'package:educacao_idoso/features/profile/presentation/profile_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

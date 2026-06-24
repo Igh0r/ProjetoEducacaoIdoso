@@ -1,5 +1,3 @@
-part of 'package:educacao_idoso/main.dart';
-
 class UserProfile {
   const UserProfile({
     this.name = '',

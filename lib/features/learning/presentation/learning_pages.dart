@@ -4,6 +4,12 @@ import 'package:educacao_idoso/core/state/app_state.dart';
 import 'package:educacao_idoso/features/learning/data/lesson_seed_data.dart';
 import 'package:educacao_idoso/features/learning/models/learning_models.dart';
 import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
+import 'package:educacao_idoso/features/accessibility/models/accessibility_settings.dart';
+import 'package:educacao_idoso/features/accessibility/services/text_to_speech_service.dart';
+import 'package:educacao_idoso/features/learning/models/quiz_attempt.dart';
+import 'package:educacao_idoso/features/learning/repositories/lesson_repository.dart';
+import 'package:educacao_idoso/features/learning/services/lesson_session_controller.dart';
+import 'package:educacao_idoso/features/learning/utils/lesson_utils.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -71,7 +77,7 @@ class CategoryCard extends StatelessWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(category.name, style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 6),
-                 Text(category.description, style: const TextStyle(fontSize: 18, color: _muted)),
+                 Text(category.description, style: const TextStyle(fontSize: 18, color: appMutedTextColor)),
                 SizedBox(height: 10 * appState.accessibilitySettings.contentSpacing),
                 LinearProgressIndicator(
                   value: category.lessons.isEmpty ? 0 : done / category.lessons.length,
@@ -131,14 +137,14 @@ class LessonTile extends StatelessWidget {
       onTap: unlocked || completed ? () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => LessonPage(lesson: lesson))) : null,
       child: Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: unlocked || completed ? _panel : _panel.withOpacity(0.55), borderRadius: BorderRadius.circular(24)),
+        decoration: BoxDecoration(color: unlocked || completed ? appPanelColor : appPanelColor.withOpacity(0.55), borderRadius: BorderRadius.circular(24)),
         child: Row(children: [
           Text(completed ? '✅' : lesson.emoji, style: const TextStyle(fontSize: 42)),
           SizedBox(width: 16 * appState.accessibilitySettings.contentSpacing),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(lesson.title, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 6),
-            Text(lesson.description, style: const TextStyle(fontSize: 17, color: _muted)),
+            Text(lesson.description, style: const TextStyle(fontSize: 17, color: appMutedTextColor)),
             SizedBox(height: 10 * appState.accessibilitySettings.contentSpacing),
             Wrap(spacing: 10, runSpacing: 8, children: [
               Chip(label: Text('⏱ ${lesson.duration}')),
@@ -148,10 +154,10 @@ class LessonTile extends StatelessWidget {
             ]),
             if (!unlocked && !completed) ...[
               const SizedBox(height: 8),
-              Text('Conclua primeiro: ${LessonUtils.missingPrerequisites(lesson, appState.completedLessons).map((id) => lessonById(id)?.title ?? id).join(', ')}', style: const TextStyle(fontSize: 15, color: _muted, fontWeight: FontWeight.bold)),
+              Text('Conclua primeiro: ${LessonUtils.missingPrerequisites(lesson, appState.completedLessons).map((id) => lessonById(id)?.title ?? id).join(', ')}', style: const TextStyle(fontSize: 15, color: appMutedTextColor, fontWeight: FontWeight.bold)),
             ],
           ])),
-          Icon(unlocked || completed ? Icons.play_circle_fill : Icons.lock, color: _line, size: 38),
+          Icon(unlocked || completed ? Icons.play_circle_fill : Icons.lock, color: appAccentColor, size: 38),
         ]),
       ),
     );
@@ -176,20 +182,20 @@ class RecommendedLessonCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          color: _panel,
+          color: appPanelColor,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: _line, width: 3),
+          border: Border.all(color: appAccentColor, width: 3),
         ),
         child: Row(children: [
           Text(next.emoji, style: const TextStyle(fontSize: 46)),
           const SizedBox(width: 16),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Próxima aula recomendada', style: TextStyle(fontSize: 18, color: _line, fontWeight: FontWeight.w900)),
+              const Text('Próxima aula recomendada', style: TextStyle(fontSize: 18, color: appAccentColor, fontWeight: FontWeight.w900)),
               const SizedBox(height: 6),
               Text(next.title, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 6),
-              Text('${LessonUtils.trackName(next.trackId)} • ${next.level} • ${next.duration}', style: const TextStyle(fontSize: 17, color: _muted)),
+              Text('${LessonUtils.trackName(next.trackId)} • ${next.level} • ${next.duration}', style: const TextStyle(fontSize: 17, color: appMutedTextColor)),
             ]),
           ),
           const Icon(Icons.arrow_forward, size: 34),
@@ -359,7 +365,7 @@ class _LessonPageState extends State<LessonPage> {
                 ...List.generate(q.options.length, (i) {
                   final isCorrect = i == q.correct;
                   final isSelected = i == controller.selectedAnswer;
-                  Color color = _panel;
+                  Color color = appPanelColor;
                   if (answered && isCorrect) color = Colors.green.shade700;
                   if (answered && isSelected && !isCorrect) color = Colors.red.shade700;
                   return Padding(
@@ -418,12 +424,12 @@ class _LessonPageState extends State<LessonPage> {
         children: [
           Container(
             padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(32)),
+            decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(32)),
             child: Column(children: [
               const Text('🎉', style: TextStyle(fontSize: 80)),
               Text(widget.lesson.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 16),
-              Text('Resultado do quiz: $score/$total', style: const TextStyle(fontSize: 28, color: _line, fontWeight: FontWeight.w900)),
+              Text('Resultado do quiz: $score/$total', style: const TextStyle(fontSize: 28, color: appAccentColor, fontWeight: FontWeight.w900)),
             ]),
           ),
           const SizedBox(height: 20),
@@ -452,7 +458,7 @@ class _LessonPageState extends State<LessonPage> {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: _panel,
+          color: appPanelColor,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: statusColor, width: 3),
         ),

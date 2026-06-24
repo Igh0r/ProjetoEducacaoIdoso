@@ -1,3 +1,5 @@
+import 'package:educacao_idoso/core/state/app_state.dart';
+import 'package:educacao_idoso/features/profile/models/user_profile.dart';
 class AssistantAnswerService {
   const AssistantAnswerService();
 

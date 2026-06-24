@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:educacao_idoso/core/state/app_state.dart';
 import 'package:educacao_idoso/features/auth/presentation/login_page.dart';
 import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
+import 'package:educacao_idoso/features/profile/models/user_profile.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -99,5 +100,52 @@ class _AccessibilitySlider extends StatelessWidget {
       ),
       Slider(value: value, min: min, max: max, divisions: divisions, label: label, onChanged: onChanged),
     ]);
+  }
+}
+
+Future<void> showProfileEditor(BuildContext context, UserProfile initialProfile) async {
+  final nameController = TextEditingController(text: initialProfile.name);
+  final phoneController = TextEditingController(text: initialProfile.emergencyPhone);
+  final contactController = TextEditingController(text: initialProfile.trustedContactName);
+  final preferencesController = TextEditingController(text: initialProfile.preferences);
+
+  try {
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Perfil opcional'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nome')),
+              TextField(controller: phoneController, decoration: const InputDecoration(labelText: 'Telefone de emergência'), keyboardType: TextInputType.phone),
+              TextField(controller: contactController, decoration: const InputDecoration(labelText: 'Contato de confiança')),
+              TextField(controller: preferencesController, decoration: const InputDecoration(labelText: 'Preferências'), maxLines: 2),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancelar')),
+          FilledButton(
+            onPressed: () async {
+              await appState.saveUserProfile(UserProfile(
+                name: nameController.text.trim(),
+                emergencyPhone: phoneController.text.trim(),
+                trustedContactName: contactController.text.trim(),
+                preferences: preferencesController.text.trim(),
+              ));
+              if (context.mounted) Navigator.of(context).pop();
+            },
+            child: const Text('Salvar'),
+          ),
+        ],
+      ),
+    );
+  } finally {
+    nameController.dispose();
+    phoneController.dispose();
+    contactController.dispose();
+    preferencesController.dispose();
   }
 }

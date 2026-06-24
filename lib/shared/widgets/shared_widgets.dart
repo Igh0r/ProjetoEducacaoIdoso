@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:educacao_idoso/app/theme/app_colors.dart';
+import 'package:educacao_idoso/core/state/app_state.dart';
+import 'package:educacao_idoso/features/profile/models/user_profile.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({this.title, this.subtitle, required this.child, this.showBack = false, super.key});
@@ -46,8 +48,8 @@ class SeniorButton extends StatelessWidget {
       width: double.infinity,
       child: FilledButton.icon(
         style: FilledButton.styleFrom(
-          backgroundColor: secondaryStyle ? Colors.grey.shade700 : _line,
-          foregroundColor: secondaryStyle ? Colors.white : _bg,
+          backgroundColor: secondaryStyle ? Colors.grey.shade700 : appAccentColor,
+          foregroundColor: secondaryStyle ? Colors.white : appBackgroundColor,
           padding: EdgeInsets.symmetric(vertical: 20 * buttonScale, horizontal: 18 * buttonScale),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
         ),
@@ -71,14 +73,14 @@ class InfoCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(18 * spacing),
-      decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.white10)),
+      decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.white10)),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(icon, style: const TextStyle(fontSize: 34)),
         SizedBox(width: 14 * spacing),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title, style: Theme.of(context).textTheme.titleMedium),
           SizedBox(height: 6 * spacing),
-          Text(text, style: const TextStyle(fontSize: 18, color: _muted, height: 1.35)),
+          Text(text, style: const TextStyle(fontSize: 18, color: appMutedTextColor, height: 1.35)),
         ])),
       ]),
     );
@@ -136,7 +138,7 @@ class StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(18 * appState.accessibilitySettings.contentSpacing),
-      decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(24)),
       child: Column(children: [
         Text(icon, style: const TextStyle(fontSize: 40)),
         Text(value, style: const TextStyle(fontSize: 34, color: appAccentColor, fontWeight: FontWeight.w900)),

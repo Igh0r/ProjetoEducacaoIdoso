@@ -7,6 +7,7 @@ part 'features/apps/models/app_models.dart';
 part 'features/learning/data/lesson_seed_data.dart';
 part 'features/apps/data/app_seed_data.dart';
 part 'features/learning/repositories/lesson_repository.dart';
+part 'features/learning/services/lesson_session_controller.dart';
 part 'features/learning/utils/lesson_utils.dart';
 part 'features/progress/repositories/progress_repository.dart';
 part 'features/progress/services/progress_service.dart';

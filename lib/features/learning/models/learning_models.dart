@@ -1,4 +1,4 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
 
 enum LessonPhase { steps, quizIntro, quiz, done }
 
@@ -13,7 +13,21 @@ class LessonCategory {
 }
 
 class Lesson {
-  const Lesson({required this.id, required this.title, required this.description, required this.emoji, required this.duration, required this.difficulty, required this.minutes, required this.steps, required this.quiz});
+  const Lesson({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.emoji,
+    required this.duration,
+    required this.difficulty,
+    required this.minutes,
+    required this.steps,
+    required this.quiz,
+    required this.trackId,
+    required this.level,
+    required this.estimatedDifficultyScore,
+    this.prerequisites = const [],
+  });
   final String id;
   final String title;
   final String description;
@@ -21,6 +35,10 @@ class Lesson {
   final String duration;
   final String difficulty;
   final int minutes;
+  final String trackId;
+  final String level;
+  final int estimatedDifficultyScore;
+  final List<String> prerequisites;
   final List<LessonStep> steps;
   final List<QuizQuestion> quiz;
 }

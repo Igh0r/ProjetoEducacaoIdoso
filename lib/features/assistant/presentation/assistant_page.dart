@@ -1,4 +1,8 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/app/theme/app_colors.dart';
+import 'package:educacao_idoso/features/assistant/models/chat_message.dart';
+import 'package:educacao_idoso/features/assistant/services/assistant_answer_service.dart';
+import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
 
 class AssistantPage extends StatefulWidget {
   const AssistantPage({super.key});
@@ -59,7 +63,7 @@ class _AssistantPageState extends State<AssistantPage> {
                 decoration: InputDecoration(
                   hintText: 'Digite sua dúvida...',
                   filled: true,
-                  fillColor: _panel,
+                  fillColor: appPanelColor,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
                 ),
                 onSubmitted: (_) => send(),
@@ -87,7 +91,7 @@ class ChatBubble extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: message.user ? Colors.blue.shade700 : _panel,
+          color: message.user ? Colors.blue.shade700 : appPanelColor,
           borderRadius: BorderRadius.circular(24),
         ),
         child: Text(message.text, style: const TextStyle(fontSize: 20, height: 1.35)),

@@ -24,7 +24,7 @@
 
 ## Fase 4 — Persistência e segurança
 
-- Salvar progresso localmente.
+- Salvar progresso localmente. **Implementado com SQLite para aulas concluídas e pontuações de quiz.**
 - Permitir cadastro opcional de nome, contato de emergência e familiar de confiança.
 - Adicionar checklist anti-golpe antes de PIX, banco e gov.br.
 - Implementar backup/exportação simples dos dados.
@@ -59,8 +59,8 @@
    - Usar `LessonSessionController` para centralizar sessão de aula, quiz, pontuação e revisão.
    - Expandir gradualmente os conteúdos que ainda usam `standardSteps` e `standardQuiz`.
 3. **Persistência**
-   - Implementar `ProgressRepository` persistente com armazenamento local.
-   - Salvar progresso, pontuação e preferências de acessibilidade.
+   - Implementar `ProgressRepository` persistente com armazenamento local. **Iniciado com SQLite.**
+   - Salvar progresso e pontuação no SQLite; preferências de acessibilidade permanecem como próxima evolução.
 4. **Integrações seguras**
    - Transformar `PlannedAppAction` em execução real com confirmação, usando links oficiais, telefone e mapas.
 5. **Testes obrigatórios**

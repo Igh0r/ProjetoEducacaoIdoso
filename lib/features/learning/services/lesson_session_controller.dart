@@ -1,4 +1,6 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/foundation.dart';
+import 'package:educacao_idoso/features/learning/models/learning_models.dart';
+import 'package:educacao_idoso/features/learning/models/quiz_attempt.dart';
 
 class LessonSessionController extends ChangeNotifier {
   LessonSessionController(this.lesson);

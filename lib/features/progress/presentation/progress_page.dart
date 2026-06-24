@@ -1,7 +1,9 @@
+import 'package:educacao_idoso/app/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:educacao_idoso/core/state/app_state.dart';
 import 'package:educacao_idoso/features/learning/repositories/lesson_repository.dart';
 import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
+import 'package:educacao_idoso/features/progress/services/progress_service.dart';
 
 class ProgressPage extends StatelessWidget {
   const ProgressPage({super.key});
@@ -76,7 +78,7 @@ class AchievementCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: _panel,
+        color: appPanelColor,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: achievement.unlocked ? Colors.amber : Colors.white10, width: achievement.unlocked ? 2 : 1),
       ),
@@ -90,11 +92,11 @@ class AchievementCard extends StatelessWidget {
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(achievement.title, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 6),
-          Text(achievement.description, style: const TextStyle(fontSize: 18, color: _muted, height: 1.35)),
+          Text(achievement.description, style: const TextStyle(fontSize: 18, color: appMutedTextColor, height: 1.35)),
           const SizedBox(height: 8),
           Text(
             achievement.progressText == null ? status : '$status • ${achievement.progressText}',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: achievement.unlocked ? Colors.amber : _muted),
+            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900, color: achievement.unlocked ? Colors.amber : appMutedTextColor),
           ),
         ])),
       ]),

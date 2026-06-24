@@ -3,6 +3,7 @@ import 'package:educacao_idoso/features/apps/data/app_seed_data.dart';
 import 'package:educacao_idoso/features/apps/models/app_models.dart';
 import 'package:educacao_idoso/features/apps/services/app_launch_service.dart';
 import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
+import 'package:educacao_idoso/core/state/app_state.dart';
 
 class AppLauncherPage extends StatelessWidget {
   const AppLauncherPage({super.key});

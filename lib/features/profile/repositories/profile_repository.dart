@@ -1,4 +1,7 @@
-part of 'package:educacao_idoso/main.dart';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:educacao_idoso/features/profile/models/user_profile.dart';
 
 abstract class ProfileRepository {
   UserProfile loadProfile();

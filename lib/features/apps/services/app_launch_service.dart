@@ -1,4 +1,14 @@
+import 'package:url_launcher/url_launcher.dart';
 import 'package:educacao_idoso/features/apps/models/app_models.dart';
+
+
+class PlannedAppAction {
+  const PlannedAppAction({required this.app, required this.requiresConfirmation, required this.confirmationMessage});
+
+  final AppItem app;
+  final bool requiresConfirmation;
+  final String confirmationMessage;
+}
 
 class AppLaunchResult {
   const AppLaunchResult({required this.message, this.launched = false});
@@ -9,6 +19,13 @@ class AppLaunchResult {
 
 class AppLaunchService {
   const AppLaunchService();
+
+
+  PlannedAppAction plan(AppItem app) => PlannedAppAction(
+        app: app,
+        requiresConfirmation: app.actionType != AppActionType.messageOnly || app.isEmergency || _isSensitiveLabel(app.label),
+        confirmationMessage: _planningMessage(app),
+      );
 
   Future<AppLaunchResult> launch(AppItem app) async {
     final uri = _buildUri(app);
@@ -54,6 +71,24 @@ class AppLaunchService {
       case AppActionType.appScheme:
       case AppActionType.messageOnly:
         return LaunchMode.platformDefault;
+    }
+  }
+
+
+  bool _isSensitiveLabel(String label) => const {'Banco', 'PIX', 'Emergência', 'gov.br', 'Meu INSS', 'SUS'}.contains(label);
+
+  String _planningMessage(AppItem app) {
+    switch (app.actionType) {
+      case AppActionType.phoneCall:
+        return 'Confirme se deseja ligar para ${app.phoneNumber ?? app.label}.';
+      case AppActionType.openUrl:
+        return 'Confirme se deseja abrir um site externo de ${app.label}.';
+      case AppActionType.mapSearch:
+        return 'Confirme se deseja abrir o mapa para ${app.mapQuery ?? app.label}.';
+      case AppActionType.appScheme:
+        return 'Confirme se deseja abrir ${app.label} fora do aplicativo educativo.';
+      case AppActionType.messageOnly:
+        return app.message;
     }
   }
 

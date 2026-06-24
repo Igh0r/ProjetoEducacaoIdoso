@@ -1,3 +1,4 @@
+import 'package:educacao_idoso/features/learning/models/learning_models.dart';
 import 'package:educacao_idoso/features/learning/repositories/lesson_repository.dart';
 
 class ProgressService {

@@ -6,6 +6,7 @@ import 'package:educacao_idoso/features/assistant/presentation/assistant_page.da
 import 'package:educacao_idoso/features/learning/presentation/learning_pages.dart';
 import 'package:educacao_idoso/features/profile/presentation/profile_page.dart';
 import 'package:educacao_idoso/features/progress/presentation/progress_page.dart';
+import 'package:educacao_idoso/features/accessibility/services/accessibility_service.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});

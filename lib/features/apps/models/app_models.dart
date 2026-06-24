@@ -1,4 +1,4 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
 
 class AppItem {
   const AppItem(this.label, this.emoji, this.color, this.message);

@@ -1,4 +1,5 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/app/theme/app_colors.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({this.title, this.subtitle, required this.child, this.showBack = false, super.key});
@@ -15,18 +16,18 @@ class AppShell extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 16, 16, 18),
-              decoration: const BoxDecoration(color: _panel, border: Border(bottom: BorderSide(color: _line, width: 4))),
+              decoration: const BoxDecoration(color: appPanelColor, border: Border(bottom: BorderSide(color: appAccentColor, width: 4))),
               child: Row(children: [
                 if (showBack) IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.arrow_back, size: 32)),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(title!, style: Theme.of(context).textTheme.headlineMedium),
-                  if (subtitle != null) Padding(padding: const EdgeInsets.only(top: 4), child: Text(subtitle!, style: const TextStyle(fontSize: 18, color: _muted))),
+                  if (subtitle != null) Padding(padding: const EdgeInsets.only(top: 4), child: Text(subtitle!, style: const TextStyle(fontSize: 18, color: appMutedTextColor))),
                 ])),
               ]),
             ),
             Expanded(child: child),
           ]);
-    return Scaffold(backgroundColor: _bg, body: SafeArea(top: title == null, bottom: false, child: body));
+    return Scaffold(backgroundColor: appBackgroundColor, body: SafeArea(top: title == null, bottom: false, child: body));
   }
 }
 
@@ -44,8 +45,8 @@ class SeniorButton extends StatelessWidget {
       width: double.infinity,
       child: FilledButton.icon(
         style: FilledButton.styleFrom(
-          backgroundColor: secondaryStyle ? Colors.grey.shade700 : _line,
-          foregroundColor: secondaryStyle ? Colors.white : _bg,
+          backgroundColor: secondaryStyle ? Colors.grey.shade700 : appAccentColor,
+          foregroundColor: secondaryStyle ? Colors.white : appBackgroundColor,
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
         ),
@@ -68,14 +69,14 @@ class InfoCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.white10)),
+      decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.white10)),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(icon, style: const TextStyle(fontSize: 34)),
         const SizedBox(width: 14),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 6),
-          Text(text, style: const TextStyle(fontSize: 18, color: _muted, height: 1.35)),
+          Text(text, style: const TextStyle(fontSize: 18, color: appMutedTextColor, height: 1.35)),
         ])),
       ]),
     );
@@ -112,11 +113,11 @@ class ProgressBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Seu progresso', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: _bg)),
+        Text('Seu progresso', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: appBackgroundColor)),
         const SizedBox(height: 10),
         LinearProgressIndicator(value: value, minHeight: 14, borderRadius: BorderRadius.circular(99), backgroundColor: Colors.black26, color: Colors.greenAccent),
         const SizedBox(height: 10),
-        Text('$completed de $total aulas concluídas', style: const TextStyle(color: _bg, fontSize: 20, fontWeight: FontWeight.w900)),
+        Text('$completed de $total aulas concluídas', style: const TextStyle(color: appBackgroundColor, fontSize: 20, fontWeight: FontWeight.w900)),
       ]),
     );
   }
@@ -132,22 +133,26 @@ class StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(24)),
+      decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(24)),
       child: Column(children: [
         Text(icon, style: const TextStyle(fontSize: 40)),
-        Text(value, style: const TextStyle(fontSize: 34, color: _line, fontWeight: FontWeight.w900)),
-        Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: _muted)),
+        Text(value, style: const TextStyle(fontSize: 34, color: appAccentColor, fontWeight: FontWeight.w900)),
+        Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 17, color: appMutedTextColor)),
       ]),
     );
   }
 }
 
 class EmergencyCard extends StatelessWidget {
-  const EmergencyCard({super.key});
+  const EmergencyCard({this.profile, super.key});
+  final UserProfile? profile;
 
   @override
   Widget build(BuildContext context) {
-    return const WarningCard(text: 'Emergência: SAMU 192 • Bombeiros 193 • Polícia 190 • CVV 188. Em risco imediato, ligue para o serviço adequado.');
+    final trusted = profile?.trustedContactLabel ?? appState.userProfile.trustedContactLabel;
+    return WarningCard(
+      text: 'Emergência: SAMU 192 • Bombeiros 193 • Polícia 190 • CVV 188. Em risco imediato, ligue para o serviço adequado. Em dúvidas sobre PIX, golpes, segurança ou dados sensíveis, pare e confirme com $trusted.',
+    );
   }
 }
 

@@ -40,18 +40,19 @@ class SeniorButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final buttonScale = appState.accessibilitySettings.buttonScale;
     return SizedBox(
       width: double.infinity,
       child: FilledButton.icon(
         style: FilledButton.styleFrom(
           backgroundColor: secondaryStyle ? Colors.grey.shade700 : _line,
           foregroundColor: secondaryStyle ? Colors.white : _bg,
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
+          padding: EdgeInsets.symmetric(vertical: 20 * buttonScale, horizontal: 18 * buttonScale),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
         ),
         onPressed: onPressed,
-        icon: Icon(icon, size: 30),
-        label: Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w900)),
+        icon: Icon(icon, size: 30 * buttonScale),
+        label: Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: 23 * buttonScale, fontWeight: FontWeight.w900)),
       ),
     );
   }
@@ -65,16 +66,17 @@ class InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = appState.accessibilitySettings.contentSpacing;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18 * spacing),
       decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.white10)),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(icon, style: const TextStyle(fontSize: 34)),
-        const SizedBox(width: 14),
+        SizedBox(width: 14 * spacing),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 6),
+          SizedBox(height: 6 * spacing),
           Text(text, style: const TextStyle(fontSize: 18, color: _muted, height: 1.35)),
         ])),
       ]),
@@ -88,9 +90,10 @@ class WarningCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final spacing = appState.accessibilitySettings.contentSpacing;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18 * spacing),
       decoration: BoxDecoration(color: Colors.red.shade900, borderRadius: BorderRadius.circular(24), border: Border.all(color: Colors.red.shade400, width: 2)),
       child: Text('⚠️ $text', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
     );
@@ -106,7 +109,7 @@ class ProgressBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final value = total == 0 ? 0.0 : completed / total;
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: EdgeInsets.all(22 * appState.accessibilitySettings.contentSpacing),
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: [Colors.yellow.shade700, Colors.orange.shade700]),
         borderRadius: BorderRadius.circular(28),
@@ -131,7 +134,7 @@ class StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: EdgeInsets.all(18 * appState.accessibilitySettings.contentSpacing),
       decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(24)),
       child: Column(children: [
         Text(icon, style: const TextStyle(fontSize: 40)),

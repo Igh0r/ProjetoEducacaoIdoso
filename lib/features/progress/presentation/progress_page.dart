@@ -11,18 +11,18 @@ class ProgressPage extends StatelessWidget {
       child: AnimatedBuilder(
         animation: appState,
         builder: (context, _) => ListView(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16 * appState.accessibilitySettings.contentSpacing),
           children: [
             ProgressBanner(completed: appState.completedLessons.length, total: appState.totalLessons),
-            const SizedBox(height: 16),
+            SizedBox(height: 16 * appState.accessibilitySettings.contentSpacing),
             Row(children: [
               Expanded(child: StatCard(icon: '🏆', value: '${appState.completedLessons.length}', label: 'Aulas concluídas')),
-              const SizedBox(width: 12),
+              SizedBox(width: 12 * appState.accessibilitySettings.contentSpacing),
               Expanded(child: StatCard(icon: '⏱', value: '${appState.totalMinutes}', label: 'Minutos estudados')),
             ]),
-            const SizedBox(height: 20),
+            SizedBox(height: 20 * appState.accessibilitySettings.contentSpacing),
             Text('Histórico', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 10),
+            SizedBox(height: 10 * appState.accessibilitySettings.contentSpacing),
             if (appState.completedLessons.isEmpty) const InfoCard(icon: '🌱', title: 'Comece hoje', text: 'Conclua sua primeira aula para ver seu histórico aqui.'),
             ...appState.completedLessons.map((id) {
               final lesson = lessonById(id)!;

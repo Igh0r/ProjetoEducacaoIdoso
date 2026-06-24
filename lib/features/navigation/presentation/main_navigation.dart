@@ -24,7 +24,7 @@ class _MainNavigationState extends State<MainNavigation> {
       animation: appState,
       builder: (context, _) => MediaQuery(
         data: MediaQuery.of(context).copyWith(
-          textScaler: TextScaler.linear(appState.textScale),
+          textScaler: accessibilityService.textScalerFor(appState.accessibilitySettings),
         ),
         child: Scaffold(
           body: pages[index],

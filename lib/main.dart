@@ -4,6 +4,8 @@ part 'app/theme/app_theme.dart';
 part 'features/learning/models/learning_models.dart';
 part 'features/assistant/models/chat_message.dart';
 part 'features/apps/models/app_models.dart';
+part 'features/accessibility/models/accessibility_settings.dart';
+part 'features/accessibility/services/accessibility_service.dart';
 part 'features/learning/data/lesson_seed_data.dart';
 part 'features/apps/data/app_seed_data.dart';
 part 'features/learning/repositories/lesson_repository.dart';

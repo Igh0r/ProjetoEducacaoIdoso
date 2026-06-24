@@ -26,9 +26,21 @@ class ProgressPage extends StatelessWidget {
             if (appState.completedLessons.isEmpty) const InfoCard(icon: '🌱', title: 'Comece hoje', text: 'Conclua sua primeira aula para ver seu histórico aqui.'),
             ...appState.completedLessons.map((id) {
               final lesson = lessonById(id)!;
+              final latestAttempt = appState.latestQuizAttempt(id);
+              final bestAttempt = appState.bestQuizAttempt(id);
+              final latestScore = latestAttempt?.score ?? appState.quizScores[id] ?? 0;
+              final bestScore = bestAttempt?.score ?? latestScore;
+              final attemptCount = appState.quizAttempts[id]?.length ?? 0;
+              final attemptSummary = attemptCount == 0
+                  ? 'Sem tentativa registrada'
+                  : 'Última tentativa: $latestScore/${lesson.quiz.length} • Melhor: $bestScore/${lesson.quiz.length} • $attemptCount tentativa${attemptCount == 1 ? '' : 's'}';
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: InfoCard(icon: '✅', title: lesson.title, text: 'Quiz: ${appState.quizScores[id] ?? 0}/${lesson.quiz.length} • ${lesson.duration}'),
+                child: InfoCard(
+                  icon: bestScore == lesson.quiz.length ? '🏆' : '✅',
+                  title: lesson.title,
+                  text: '$attemptSummary • ${lesson.duration}',
+                ),
               );
             }),
           ],

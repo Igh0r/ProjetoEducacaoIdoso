@@ -1,4 +1,5 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/widgets.dart';
+import 'package:educacao_idoso/features/accessibility/models/accessibility_settings.dart';
 
 class AccessibilityService {
   const AccessibilityService();

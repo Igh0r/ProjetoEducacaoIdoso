@@ -1,5 +1,3 @@
-part of 'package:educacao_idoso/main.dart';
-
 class AssistantAnswerService {
   const AssistantAnswerService();
 
@@ -154,4 +152,4 @@ const _assistantIntents = <_AssistantIntent>[
 
 const assistantAnswerService = AssistantAnswerService();
 
-String answerFor(String question) => assistantAnswerService.answerFor(question);
+String answerFor(String question) => assistantAnswerService.answerFor(question, profile: appState.userProfile);

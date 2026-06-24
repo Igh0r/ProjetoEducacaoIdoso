@@ -1,4 +1,7 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/core/state/app_state.dart';
+import 'package:educacao_idoso/features/learning/repositories/lesson_repository.dart';
+import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
 
 class ProgressPage extends StatelessWidget {
   const ProgressPage({super.key});

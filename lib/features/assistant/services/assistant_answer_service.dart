@@ -1,5 +1,3 @@
-part of 'package:educacao_idoso/main.dart';
-
 class AssistantAnswerService {
   const AssistantAnswerService();
 

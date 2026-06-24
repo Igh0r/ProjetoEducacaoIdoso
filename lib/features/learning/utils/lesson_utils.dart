@@ -1,4 +1,4 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:educacao_idoso/features/learning/models/learning_models.dart';
 
 class LessonUtils {
   const LessonUtils._();

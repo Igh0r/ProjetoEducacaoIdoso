@@ -1,4 +1,5 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:educacao_idoso/features/learning/data/lesson_seed_data.dart';
+import 'package:educacao_idoso/features/learning/models/learning_models.dart';
 
 Lesson? lessonById(String id) {
   for (final category in learningTracks) {

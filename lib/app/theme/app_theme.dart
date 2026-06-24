@@ -1,9 +1,6 @@
-part of 'package:educacao_idoso/main.dart';
-
-const _bg = Color(0xFF111827);
-const _panel = Color(0xFF1F2937);
-const _line = Color(0xFFFACC15);
-const _muted = Color(0xFFD1D5DB);
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/app/theme/app_colors.dart';
+import 'package:educacao_idoso/features/auth/presentation/login_page.dart';
 
 class EducacaoIdosoApp extends StatelessWidget {
   const EducacaoIdosoApp({super.key});
@@ -15,12 +12,12 @@ class EducacaoIdosoApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: _bg,
+        scaffoldBackgroundColor: appBackgroundColor,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: _line,
+          seedColor: appAccentColor,
           brightness: Brightness.dark,
-          primary: _line,
-          surface: _panel,
+          primary: appAccentColor,
+          surface: appPanelColor,
         ),
         fontFamily: 'Roboto',
         textTheme: const TextTheme(

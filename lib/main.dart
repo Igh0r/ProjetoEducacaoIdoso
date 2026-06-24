@@ -13,6 +13,7 @@ part 'features/accessibility/services/accessibility_service.dart';
 part 'features/learning/data/lesson_seed_data.dart';
 part 'features/apps/data/app_seed_data.dart';
 part 'features/learning/repositories/lesson_repository.dart';
+part 'features/learning/services/lesson_session_controller.dart';
 part 'features/learning/utils/lesson_utils.dart';
 part 'features/progress/repositories/progress_repository.dart';
 part 'features/profile/repositories/profile_repository.dart';

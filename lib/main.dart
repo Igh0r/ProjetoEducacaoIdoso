@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 part 'app/theme/app_theme.dart';
 part 'features/learning/models/learning_models.dart';
@@ -11,9 +15,13 @@ part 'features/apps/data/app_seed_data.dart';
 part 'features/learning/repositories/lesson_repository.dart';
 part 'features/learning/utils/lesson_utils.dart';
 part 'features/progress/repositories/progress_repository.dart';
+part 'features/profile/repositories/profile_repository.dart';
 part 'features/progress/services/progress_service.dart';
 part 'features/assistant/services/assistant_answer_service.dart';
 part 'features/apps/services/app_launch_service.dart';
+part 'features/accessibility/models/accessibility_settings.dart';
+part 'features/accessibility/services/accessibility_service.dart';
+part 'features/accessibility/services/text_to_speech_service.dart';
 part 'core/state/app_state.dart';
 part 'shared/widgets/shared_widgets.dart';
 part 'features/auth/presentation/login_page.dart';
@@ -24,4 +32,10 @@ part 'features/assistant/presentation/assistant_page.dart';
 part 'features/progress/presentation/progress_page.dart';
 part 'features/profile/presentation/profile_page.dart';
 
-void main() => runApp(const EducacaoIdosoApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final progressRepository = SqliteProgressRepository();
+  await progressRepository.init();
+  appState = AppState(progressRepository: progressRepository);
+  runApp(const EducacaoIdosoApp());
+}

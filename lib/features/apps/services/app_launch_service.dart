@@ -1,4 +1,4 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:educacao_idoso/features/apps/models/app_models.dart';
 
 class AppLaunchService {
   const AppLaunchService();

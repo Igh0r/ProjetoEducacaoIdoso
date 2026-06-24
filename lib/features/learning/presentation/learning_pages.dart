@@ -1,4 +1,9 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/app/theme/app_colors.dart';
+import 'package:educacao_idoso/core/state/app_state.dart';
+import 'package:educacao_idoso/features/learning/data/lesson_seed_data.dart';
+import 'package:educacao_idoso/features/learning/models/learning_models.dart';
+import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -13,9 +18,15 @@ class HomePage extends StatelessWidget {
         children: [
           AnimatedBuilder(
             animation: appState,
-            builder: (context, _) => ProgressBanner(
-              completed: appState.completedLessons.length,
-              total: appState.totalLessons,
+            builder: (context, _) => Column(
+              children: [
+                ProgressBanner(
+                  completed: appState.completedLessons.length,
+                  total: appState.totalLessons,
+                ),
+                const SizedBox(height: 16),
+                RecommendedLessonCard(lesson: LessonUtils.nextRecommendedLesson(learningTracks, appState.completedLessons)),
+              ],
             ),
           ),
           SizedBox(height: 20 * appState.accessibilitySettings.contentSpacing),
@@ -44,7 +55,7 @@ class CategoryCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          color: _panel,
+          color: appPanelColor,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(color: category.color, width: 3),
         ),
@@ -60,7 +71,7 @@ class CategoryCard extends StatelessWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(category.name, style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 6),
-                Text(category.description, style: const TextStyle(fontSize: 18, color: _muted)),
+                 Text(category.description, style: const TextStyle(fontSize: 18, color: _muted)),
                 SizedBox(height: 10 * appState.accessibilitySettings.contentSpacing),
                 LinearProgressIndicator(
                   value: category.lessons.isEmpty ? 0 : done / category.lessons.length,
@@ -96,9 +107,10 @@ class CategoryPage extends StatelessWidget {
         itemBuilder: (context, index) {
           final lesson = category.lessons[index];
           final completed = appState.completedLessons.contains(lesson.id);
+          final unlocked = LessonUtils.isUnlocked(lesson, appState.completedLessons);
           return Padding(
             padding: const EdgeInsets.only(bottom: 14),
-            child: LessonTile(lesson: lesson, completed: completed),
+            child: LessonTile(lesson: lesson, completed: completed, unlocked: unlocked),
           );
         },
       ),
@@ -107,18 +119,19 @@ class CategoryPage extends StatelessWidget {
 }
 
 class LessonTile extends StatelessWidget {
-  const LessonTile({required this.lesson, required this.completed, super.key});
+  const LessonTile({required this.lesson, required this.completed, required this.unlocked, super.key});
   final Lesson lesson;
   final bool completed;
+  final bool unlocked;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(24),
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => LessonPage(lesson: lesson))),
+      onTap: unlocked || completed ? () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => LessonPage(lesson: lesson))) : null,
       child: Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(24)),
+        decoration: BoxDecoration(color: unlocked || completed ? _panel : _panel.withOpacity(0.55), borderRadius: BorderRadius.circular(24)),
         child: Row(children: [
           Text(completed ? '✅' : lesson.emoji, style: const TextStyle(fontSize: 42)),
           SizedBox(width: 16 * appState.accessibilitySettings.contentSpacing),
@@ -130,9 +143,56 @@ class LessonTile extends StatelessWidget {
             Wrap(spacing: 10, runSpacing: 8, children: [
               Chip(label: Text('⏱ ${lesson.duration}')),
               Chip(label: Text('⭐ ${lesson.difficulty}')),
+              Chip(label: Text('🧭 ${LessonUtils.trackName(lesson.trackId)}')),
+              Chip(label: Text('📈 ${lesson.level}')),
             ]),
+            if (!unlocked && !completed) ...[
+              const SizedBox(height: 8),
+              Text('Conclua primeiro: ${LessonUtils.missingPrerequisites(lesson, appState.completedLessons).map((id) => lessonById(id)?.title ?? id).join(', ')}', style: const TextStyle(fontSize: 15, color: _muted, fontWeight: FontWeight.bold)),
+            ],
           ])),
-          const Icon(Icons.play_circle_fill, color: _line, size: 38),
+          Icon(unlocked || completed ? Icons.play_circle_fill : Icons.lock, color: _line, size: 38),
+        ]),
+      ),
+    );
+  }
+}
+
+class RecommendedLessonCard extends StatelessWidget {
+  const RecommendedLessonCard({required this.lesson, super.key});
+  final Lesson? lesson;
+
+  @override
+  Widget build(BuildContext context) {
+    if (lesson == null) {
+      return const InfoCard(icon: '🎉', title: 'Próxima aula recomendada', text: 'Você concluiu todas as aulas disponíveis. Continue revisando quando quiser!');
+    }
+
+    final next = lesson!;
+    return InkWell(
+      borderRadius: BorderRadius.circular(28),
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => LessonPage(lesson: next))),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: _panel,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(color: _line, width: 3),
+        ),
+        child: Row(children: [
+          Text(next.emoji, style: const TextStyle(fontSize: 46)),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('Próxima aula recomendada', style: TextStyle(fontSize: 18, color: _line, fontWeight: FontWeight.w900)),
+              const SizedBox(height: 6),
+              Text(next.title, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 6),
+              Text('${LessonUtils.trackName(next.trackId)} • ${next.level} • ${next.duration}', style: const TextStyle(fontSize: 17, color: _muted)),
+            ]),
+          ),
+          const Icon(Icons.arrow_forward, size: 34),
         ]),
       ),
     );
@@ -148,11 +208,19 @@ class LessonPage extends StatefulWidget {
 }
 
 class _LessonPageState extends State<LessonPage> {
+  final TextToSpeechService _textToSpeechService = textToSpeechService;
+
   int step = 0;
   int quiz = 0;
   int score = 0;
   int? selected;
   LessonPhase phase = LessonPhase.steps;
+
+  @override
+  void dispose() {
+    _textToSpeechService.stop();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,6 +238,7 @@ class _LessonPageState extends State<LessonPage> {
 
   Widget _stepView(BuildContext context) {
     final item = widget.lesson.steps[step];
+    final accessibilitySettings = appState.accessibilitySettings;
     final progress = (step + 1) / widget.lesson.steps.length;
     return AppShell(
       title: widget.lesson.title,
@@ -185,13 +254,24 @@ class _LessonPageState extends State<LessonPage> {
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(32)),
+                decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(32)),
                 child: Column(children: [
                   Text(item.emoji, style: const TextStyle(fontSize: 88)),
                   SizedBox(height: 16 * appState.accessibilitySettings.contentSpacing),
                   Text(item.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 18),
                   Text(item.content, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge),
+                  if (accessibilitySettings.readAloudEnabled) ...[
+                    const SizedBox(height: 20),
+                    SeniorButton.secondary(
+                      label: 'Ouvir explicação',
+                      icon: Icons.volume_up,
+                      onPressed: () => _textToSpeechService.speakLessonStep(
+                        item,
+                        settings: accessibilitySettings,
+                      ),
+                    ),
+                  ],
                   if (item.tip != null) ...[
                     SizedBox(height: 20 * appState.accessibilitySettings.contentSpacing),
                     InfoCard(icon: '💡', title: 'Dica', text: item.tip!),
@@ -211,7 +291,10 @@ class _LessonPageState extends State<LessonPage> {
                 child: SeniorButton.secondary(
                   label: 'Voltar',
                   icon: Icons.arrow_back,
-                  onPressed: () => setState(() => step--),
+                  onPressed: () {
+                    _textToSpeechService.stop();
+                    setState(() => step--);
+                  },
                 ),
               ),
             if (step > 0) SizedBox(width: 12 * appState.accessibilitySettings.contentSpacing),
@@ -220,13 +303,16 @@ class _LessonPageState extends State<LessonPage> {
               child: SeniorButton(
                 label: step == widget.lesson.steps.length - 1 ? 'Fazer quiz' : 'Próximo',
                 icon: Icons.arrow_forward,
-                onPressed: () => setState(() {
-                  if (step == widget.lesson.steps.length - 1) {
-                    phase = LessonPhase.quizIntro;
-                  } else {
-                    step++;
-                  }
-                }),
+                onPressed: () {
+                  _textToSpeechService.stop();
+                  setState(() {
+                    if (step == widget.lesson.steps.length - 1) {
+                      phase = LessonPhase.quizIntro;
+                    } else {
+                      step++;
+                    }
+                  });
+                },
               ),
             ),
           ]),
@@ -280,14 +366,14 @@ class _LessonPageState extends State<LessonPage> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(28)),
+                  decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(28)),
                   child: Text(q.question, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge),
                 ),
                 SizedBox(height: 16 * appState.accessibilitySettings.contentSpacing),
                 ...List.generate(q.options.length, (i) {
                   final isCorrect = i == q.correct;
                   final isSelected = i == selected;
-                  Color color = _panel;
+                  Color color = appPanelColor;
                   if (answered && isCorrect) color = Colors.green.shade700;
                   if (answered && isSelected && !isCorrect) color = Colors.red.shade700;
                   return Padding(
@@ -355,4 +441,3 @@ class _LessonPageState extends State<LessonPage> {
     );
   }
 }
-

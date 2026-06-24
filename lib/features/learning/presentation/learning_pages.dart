@@ -208,11 +208,19 @@ class LessonPage extends StatefulWidget {
 }
 
 class _LessonPageState extends State<LessonPage> {
+  final TextToSpeechService _textToSpeechService = textToSpeechService;
+
   int step = 0;
   int quiz = 0;
   int score = 0;
   int? selected;
   LessonPhase phase = LessonPhase.steps;
+
+  @override
+  void dispose() {
+    _textToSpeechService.stop();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -230,6 +238,7 @@ class _LessonPageState extends State<LessonPage> {
 
   Widget _stepView(BuildContext context) {
     final item = widget.lesson.steps[step];
+    final accessibilitySettings = appState.accessibilitySettings;
     final progress = (step + 1) / widget.lesson.steps.length;
     return AppShell(
       title: widget.lesson.title,
@@ -252,6 +261,17 @@ class _LessonPageState extends State<LessonPage> {
                   Text(item.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 18),
                   Text(item.content, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge),
+                  if (accessibilitySettings.readAloudEnabled) ...[
+                    const SizedBox(height: 20),
+                    SeniorButton.secondary(
+                      label: 'Ouvir explicação',
+                      icon: Icons.volume_up,
+                      onPressed: () => _textToSpeechService.speakLessonStep(
+                        item,
+                        settings: accessibilitySettings,
+                      ),
+                    ),
+                  ],
                   if (item.tip != null) ...[
                     const SizedBox(height: 20),
                     InfoCard(icon: '💡', title: 'Dica', text: item.tip!),
@@ -271,7 +291,10 @@ class _LessonPageState extends State<LessonPage> {
                 child: SeniorButton.secondary(
                   label: 'Voltar',
                   icon: Icons.arrow_back,
-                  onPressed: () => setState(() => step--),
+                  onPressed: () {
+                    _textToSpeechService.stop();
+                    setState(() => step--);
+                  },
                 ),
               ),
             if (step > 0) const SizedBox(width: 12),
@@ -280,13 +303,16 @@ class _LessonPageState extends State<LessonPage> {
               child: SeniorButton(
                 label: step == widget.lesson.steps.length - 1 ? 'Fazer quiz' : 'Próximo',
                 icon: Icons.arrow_forward,
-                onPressed: () => setState(() {
-                  if (step == widget.lesson.steps.length - 1) {
-                    phase = LessonPhase.quizIntro;
-                  } else {
-                    step++;
-                  }
-                }),
+                onPressed: () {
+                  _textToSpeechService.stop();
+                  setState(() {
+                    if (step == widget.lesson.steps.length - 1) {
+                      phase = LessonPhase.quizIntro;
+                    } else {
+                      step++;
+                    }
+                  });
+                },
               ),
             ),
           ]),

@@ -18,7 +18,13 @@ class AppState extends ChangeNotifier {
   final ProfileRepository _profileRepository;
   double textScale = 1;
   bool highContrast = true;
-  UserProfile userProfile = const UserProfile();
+  bool readAloudEnabled = false;
+
+  AccessibilitySettings get accessibilitySettings => AccessibilitySettings(
+        textScale: textScale,
+        highContrast: highContrast,
+        readAloudEnabled: readAloudEnabled,
+      );
 
   Set<String> get completedLessons => _progressRepository.getCompletedLessons();
   Map<String, int> get quizScores => _progressRepository.getQuizScores();
@@ -45,10 +51,9 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveUserProfile(UserProfile profile) async {
-    userProfile = profile;
+  void toggleReadAloud() {
+    readAloudEnabled = !readAloudEnabled;
     notifyListeners();
-    await _profileRepository.saveProfile(profile);
   }
 }
 

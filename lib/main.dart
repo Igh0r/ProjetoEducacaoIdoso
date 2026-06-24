@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as p;
-import 'package:sqflite/sqflite.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 part 'app/theme/app_theme.dart';
 part 'features/learning/models/learning_models.dart';
@@ -19,6 +18,9 @@ part 'features/profile/repositories/profile_repository.dart';
 part 'features/progress/services/progress_service.dart';
 part 'features/assistant/services/assistant_answer_service.dart';
 part 'features/apps/services/app_launch_service.dart';
+part 'features/accessibility/models/accessibility_settings.dart';
+part 'features/accessibility/services/accessibility_service.dart';
+part 'features/accessibility/services/text_to_speech_service.dart';
 part 'core/state/app_state.dart';
 part 'shared/widgets/shared_widgets.dart';
 part 'features/auth/presentation/login_page.dart';

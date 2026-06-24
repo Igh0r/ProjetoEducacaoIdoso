@@ -1,4 +1,6 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/foundation.dart';
+import 'package:educacao_idoso/features/progress/repositories/progress_repository.dart';
+import 'package:educacao_idoso/features/progress/services/progress_service.dart';
 
 class AppState extends ChangeNotifier {
   AppState({

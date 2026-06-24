@@ -1,4 +1,7 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/core/state/app_state.dart';
+import 'package:educacao_idoso/features/auth/presentation/login_page.dart';
+import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

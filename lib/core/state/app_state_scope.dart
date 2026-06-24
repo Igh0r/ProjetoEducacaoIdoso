@@ -1,4 +1,5 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/widgets.dart';
+import 'package:educacao_idoso/core/state/app_state.dart';
 
 class AppStateScope extends InheritedNotifier<AppState> {
   const AppStateScope({required AppState state, required super.child, super.key}) : super(notifier: state);

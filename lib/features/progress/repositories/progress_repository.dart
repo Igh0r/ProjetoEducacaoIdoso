@@ -1,5 +1,3 @@
-part of 'package:educacao_idoso/main.dart';
-
 abstract class ProgressRepository {
   Set<String> getCompletedLessons();
   Map<String, int> getQuizScores();

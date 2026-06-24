@@ -1,4 +1,9 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
+import 'package:educacao_idoso/app/theme/app_colors.dart';
+import 'package:educacao_idoso/core/state/app_state.dart';
+import 'package:educacao_idoso/features/learning/data/lesson_seed_data.dart';
+import 'package:educacao_idoso/features/learning/models/learning_models.dart';
+import 'package:educacao_idoso/shared/widgets/shared_widgets.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -44,7 +49,7 @@ class CategoryCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          color: _panel,
+          color: appPanelColor,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(color: category.color, width: 3),
         ),
@@ -60,7 +65,7 @@ class CategoryCard extends StatelessWidget {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(category.name, style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 6),
-                Text(category.description, style: const TextStyle(fontSize: 18, color: _muted)),
+                Text(category.description, style: const TextStyle(fontSize: 18, color: appMutedTextColor)),
                 const SizedBox(height: 10),
                 LinearProgressIndicator(
                   value: category.lessons.isEmpty ? 0 : done / category.lessons.length,
@@ -118,21 +123,21 @@ class LessonTile extends StatelessWidget {
       onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => LessonPage(lesson: lesson))),
       child: Container(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(24)),
+        decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(24)),
         child: Row(children: [
           Text(completed ? '✅' : lesson.emoji, style: const TextStyle(fontSize: 42)),
           const SizedBox(width: 16),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(lesson.title, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 6),
-            Text(lesson.description, style: const TextStyle(fontSize: 17, color: _muted)),
+            Text(lesson.description, style: const TextStyle(fontSize: 17, color: appMutedTextColor)),
             const SizedBox(height: 10),
             Wrap(spacing: 10, runSpacing: 8, children: [
               Chip(label: Text('⏱ ${lesson.duration}')),
               Chip(label: Text('⭐ ${lesson.difficulty}')),
             ]),
           ])),
-          const Icon(Icons.play_circle_fill, color: _line, size: 38),
+          const Icon(Icons.play_circle_fill, color: appAccentColor, size: 38),
         ]),
       ),
     );
@@ -185,7 +190,7 @@ class _LessonPageState extends State<LessonPage> {
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(32)),
+                decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(32)),
                 child: Column(children: [
                   Text(item.emoji, style: const TextStyle(fontSize: 88)),
                   const SizedBox(height: 16),
@@ -280,14 +285,14 @@ class _LessonPageState extends State<LessonPage> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(color: _panel, borderRadius: BorderRadius.circular(28)),
+                  decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(28)),
                   child: Text(q.question, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge),
                 ),
                 const SizedBox(height: 16),
                 ...List.generate(q.options.length, (i) {
                   final isCorrect = i == q.correct;
                   final isSelected = i == selected;
-                  Color color = _panel;
+                  Color color = appPanelColor;
                   if (answered && isCorrect) color = Colors.green.shade700;
                   if (answered && isSelected && !isCorrect) color = Colors.red.shade700;
                   return Padding(
@@ -346,7 +351,7 @@ class _LessonPageState extends State<LessonPage> {
             const Text('🎉', style: TextStyle(fontSize: 96)),
             Text(widget.lesson.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 16),
-            Text('Resultado do quiz: $score/$total', style: const TextStyle(fontSize: 28, color: _line, fontWeight: FontWeight.w900)),
+            Text('Resultado do quiz: $score/$total', style: const TextStyle(fontSize: 28, color: appAccentColor, fontWeight: FontWeight.w900)),
             const SizedBox(height: 24),
             SeniorButton(label: 'Voltar para lições', icon: Icons.check, onPressed: () => Navigator.of(context).pop()),
           ]),

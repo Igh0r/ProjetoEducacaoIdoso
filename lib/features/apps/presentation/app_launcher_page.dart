@@ -16,6 +16,45 @@ class AppLauncherPage extends StatelessWidget {
   }
 }
 
+Future<void> _confirmAndLaunch(BuildContext context, AppItem app) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(app.isEmergency ? 'Confirmar emergência' : 'Confirmar ação'),
+      content: Text(_confirmationMessage(app)),
+      actions: [
+        TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancelar')),
+        FilledButton(onPressed: () => Navigator.of(context).pop(true), child: Text(app.isEmergency ? 'Ligar' : 'Continuar')),
+      ],
+    ),
+  );
+
+  if (!context.mounted || confirmed != true) return;
+
+  final result = await appLaunchService.launch(app);
+  if (!context.mounted) return;
+
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result.message), behavior: SnackBarBehavior.floating));
+}
+
+String _confirmationMessage(AppItem app) {
+  if (app.isEmergency && app.phoneNumber != null) {
+    return 'Você está prestes a ligar para ${app.phoneNumber} (${app.label}). Confirme apenas em caso de necessidade.';
+  }
+
+  switch (app.actionType) {
+    case AppActionType.phoneCall:
+      return 'Deseja ligar para ${app.phoneNumber ?? app.label}?';
+    case AppActionType.openUrl:
+      return 'Deseja abrir o link oficial de ${app.label}?';
+    case AppActionType.mapSearch:
+      return 'Deseja pesquisar ${app.mapQuery ?? app.label} no mapa?';
+    case AppActionType.appScheme:
+      return 'Deseja abrir ${app.label} no aplicativo compatível?';
+    case AppActionType.messageOnly:
+      return app.message;
+  }
+}
 class AppGroupSection extends StatelessWidget {
   const AppGroupSection({required this.group, super.key});
   final AppGroup group;
@@ -36,7 +75,7 @@ class AppGroupSection extends StatelessWidget {
             final app = group.apps[index];
             return InkWell(
               borderRadius: BorderRadius.circular(24),
-              onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(appLaunchService.launchMessage(app)), behavior: SnackBarBehavior.floating)),
+              onTap: () => _confirmAndLaunch(context, app),
               child: Container(
                 decoration: BoxDecoration(color: app.color, borderRadius: BorderRadius.circular(24)),
                 padding: const EdgeInsets.all(10),

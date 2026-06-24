@@ -1,5 +1,3 @@
-part of 'package:educacao_idoso/main.dart';
-
 class AccessibilitySettings {
   const AccessibilitySettings({
     this.textScale = 1,
@@ -18,6 +16,26 @@ class AccessibilitySettings {
   final double contentSpacing;
   final bool dyslexiaFriendlyFont;
   final bool readAloudEnabled;
+
+  Map<String, Object> toLocalProgressJson() => {
+        'textScale': textScale,
+        'highContrast': highContrast,
+        'lowLightTheme': lowLightTheme,
+        'buttonScale': buttonScale,
+        'contentSpacing': contentSpacing,
+        'dyslexiaFriendlyFont': dyslexiaFriendlyFont,
+        'readAloudEnabled': readAloudEnabled,
+      };
+
+  factory AccessibilitySettings.fromLocalProgressJson(Map<String, Object?> json) => AccessibilitySettings(
+        textScale: (json['textScale'] as num?)?.toDouble() ?? 1,
+        highContrast: json['highContrast'] as bool? ?? true,
+        lowLightTheme: json['lowLightTheme'] as bool? ?? false,
+        buttonScale: (json['buttonScale'] as num?)?.toDouble() ?? 1,
+        contentSpacing: (json['contentSpacing'] as num?)?.toDouble() ?? 1,
+        dyslexiaFriendlyFont: json['dyslexiaFriendlyFont'] as bool? ?? false,
+        readAloudEnabled: json['readAloudEnabled'] as bool? ?? false,
+      );
 
   AccessibilitySettings copyWith({
     double? textScale,

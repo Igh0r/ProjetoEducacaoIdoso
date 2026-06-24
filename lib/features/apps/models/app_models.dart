@@ -1,4 +1,4 @@
-part of 'package:educacao_idoso/main.dart';
+import 'package:flutter/material.dart';
 
 enum AppActionType { messageOnly, openUrl, phoneCall, mapSearch, appScheme }
 

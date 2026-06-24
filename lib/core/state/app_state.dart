@@ -22,8 +22,13 @@ class AppState extends ChangeNotifier {
 
   Set<String> get completedLessons => _progressRepository.getCompletedLessons();
   Map<String, int> get quizScores => _progressRepository.getQuizScores();
+  Map<String, DateTime> get completionDates => _progressRepository.getCompletionDates();
   int get totalLessons => _progressService.totalLessons();
   int get totalMinutes => _progressService.totalMinutes(completedLessons);
+  List<ProgressAchievement> get achievements => _progressService.achievements(completedLessons, quizScores);
+  List<ReviewSuggestion> get reviewSuggestions => _progressService.reviewSuggestions(completedLessons, quizScores);
+  Lesson? get nextLesson => _progressService.nextLesson(completedLessons);
+  List<ProgressHistoryItem> get chronologicalHistory => _progressService.chronologicalHistory(completedLessons, quizScores, completionDates);
 
   void completeLesson(String id, int score) {
     _progressRepository.completeLesson(id, score);

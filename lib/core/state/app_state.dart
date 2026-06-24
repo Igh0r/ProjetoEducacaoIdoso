@@ -11,6 +11,13 @@ class AppState extends ChangeNotifier {
   final ProgressService _progressService;
   double textScale = 1;
   bool highContrast = true;
+  bool readAloudEnabled = false;
+
+  AccessibilitySettings get accessibilitySettings => AccessibilitySettings(
+        textScale: textScale,
+        highContrast: highContrast,
+        readAloudEnabled: readAloudEnabled,
+      );
 
   Set<String> get completedLessons => _progressRepository.getCompletedLessons();
   Map<String, int> get quizScores => _progressRepository.getQuizScores();
@@ -29,6 +36,11 @@ class AppState extends ChangeNotifier {
 
   void setTextScale(double value) {
     textScale = value;
+    notifyListeners();
+  }
+
+  void toggleReadAloud() {
+    readAloudEnabled = !readAloudEnabled;
     notifyListeners();
   }
 }

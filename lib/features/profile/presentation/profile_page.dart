@@ -28,6 +28,12 @@ class ProfilePage extends StatelessWidget {
             title: const Text('Alto contraste', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             subtitle: const Text('Mantém fundo escuro e destaque amarelo.'),
           ),
+          SwitchListTile(
+            value: appState.readAloudEnabled,
+            onChanged: (_) => appState.toggleReadAloud(),
+            title: const Text('Leitura em voz alta', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            subtitle: const Text('Mostra o botão para ouvir as explicações das aulas.'),
+          ),
           const SizedBox(height: 16),
           const EmergencyCard(),
           const SizedBox(height: 16),

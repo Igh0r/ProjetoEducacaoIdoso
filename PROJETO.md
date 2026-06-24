@@ -38,7 +38,7 @@ lib/features/learning/repositories/               # Contratos e fonte local de a
 lib/features/learning/presentation/               # Telas e widgets da seção Aprender.
 lib/features/apps/models|data|services|presentation/ # Lançador educativo de apps úteis.
 lib/features/assistant/models|services|presentation/ # Assistente local com respostas determinísticas.
-lib/features/progress/repositories|services|presentation/ # Progresso em memória e cálculos de estudo.
+lib/features/progress/repositories|services|presentation/ # Persistência SQLite de progresso e cálculos de estudo.
 lib/features/profile/presentation/                # Ajustes de acessibilidade.
 lib/shared/widgets/                               # Componentes reutilizáveis para idosos.
 test/features/                                    # Testes unitários de progresso e aprendizado.
@@ -46,13 +46,13 @@ test/widget_test.dart                             # Teste básico de renderizaç
 sourceMaterial/                                   # Material React/Figma original usado como referência.
 ```
 
-> Observação: os módulos Flutter foram separados em arquivos por feature e camada, preservando o comportamento do protótipo. A persistência ainda é em memória, mas agora existe uma camada de repository/service para futura troca por armazenamento local.
+> Observação: os módulos Flutter foram separados em arquivos por feature e camada, preservando o comportamento do protótipo. O progresso das aulas agora usa um repository SQLite local, mantendo a camada de repository/service preparada para futuras evoluções de armazenamento.
 
 ## Camadas
 
 - **Models**: representam entidades simples, como `Lesson`, `LessonCategory`, `LessonStep`, `QuizQuestion`, `AppItem` e `ChatMessage`.
 - **Data**: concentra dados locais de aulas, quizzes e grupos de apps úteis.
-- **Repositories**: abstraem acesso a dados. Hoje usam memória/dados locais; futuramente podem usar banco local ou `shared_preferences`.
+- **Repositories**: abstraem acesso a dados. O progresso usa SQLite local, enquanto conteúdos de aulas e apps continuam em dados locais.
 - **Services**: concentram regras reutilizáveis, como cálculo de progresso, resposta do assistente e mensagens do lançador de apps.
 - **Presentation**: contém telas e widgets de cada feature.
 - **Shared widgets**: reúne componentes acessíveis e reutilizáveis, como botões grandes, cards informativos, alertas e banner de progresso.
@@ -91,13 +91,12 @@ flutter test
 ## Decisões de design
 
 - **Sem login real** nesta primeira entrega: reduz complexidade e facilita uso por idosos em protótipos.
-- **Estado em memória**: progresso dura durante a sessão. A camada de repository permite evoluir para persistência local.
+- **Persistência local com SQLite**: progresso e pontuações de quiz são carregados de um banco local ao iniciar o app e atualizados quando uma aula é concluída.
 - **Conteúdo local**: aulas e quizzes ficam embutidos para funcionar offline e sem conta externa.
 - **Sem IA externa**: o assistente usa respostas locais para evitar custo, latência e dependência de internet.
 
 ## Próximas melhorias sugeridas
 
-- Persistir progresso com `shared_preferences` ou banco local.
 - Adicionar leitura em voz alta e comandos por voz.
 - Integrar abertura real de aplicativos/links com `url_launcher`.
 - Criar onboarding para cadastro de familiar/cuidador.

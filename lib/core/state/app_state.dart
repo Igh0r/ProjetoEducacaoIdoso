@@ -33,4 +33,4 @@ class AppState extends ChangeNotifier {
   }
 }
 
-final appState = AppState();
+AppState appState = AppState();

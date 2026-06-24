@@ -13,7 +13,7 @@ class AppLauncherPage extends StatelessWidget {
       title: '📱 Meus Aplicativos',
       subtitle: 'Toque em um ícone para lembrar a função.',
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16 * appState.accessibilitySettings.contentSpacing),
         children: appGroups.map((group) => AppGroupSection(group: group)).toList(),
       ),
     );
@@ -30,7 +30,7 @@ class AppGroupSection extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 24),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(group.title, style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 12),
+        SizedBox(height: 12 * appState.accessibilitySettings.contentSpacing),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),

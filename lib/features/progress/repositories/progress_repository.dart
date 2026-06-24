@@ -3,15 +3,14 @@ abstract class ProgressRepository {
   Map<String, int> getQuizScores();
   Map<String, DateTime> getCompletionDates();
   void completeLesson(String lessonId, int score);
+  AccessibilitySettings getAccessibilitySettings();
+  void saveAccessibilitySettings(AccessibilitySettings settings);
 }
 
 class InMemoryProgressRepository implements ProgressRepository {
   final Set<String> _completedLessons = <String>{};
   final Map<String, int> _quizScores = <String, int>{};
-  final Map<String, DateTime> _completionDates = <String, DateTime>{};
-
-  @override
-  Set<String> getCompletedLessons() => Set.unmodifiable(_completedLessons);
+  Map<String, Object> _localProgressAccessibility = const AccessibilitySettings().toLocalProgressJson();
 
   @override
   Map<String, int> getQuizScores() => Map.unmodifiable(_quizScores);
@@ -97,5 +96,13 @@ class SqliteProgressRepository implements ProgressRepository {
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     ));
+  }
+
+  @override
+  AccessibilitySettings getAccessibilitySettings() => AccessibilitySettings.fromLocalProgressJson(_localProgressAccessibility);
+
+  @override
+  void saveAccessibilitySettings(AccessibilitySettings settings) {
+    _localProgressAccessibility = settings.toLocalProgressJson();
   }
 }

@@ -13,75 +13,29 @@ class ProgressPage extends StatelessWidget {
       subtitle: 'Acompanhe seu aprendizado.',
       child: AnimatedBuilder(
         animation: appState,
-        builder: (context, _) {
-          final nextLesson = appState.nextLesson;
-          final reviewSuggestions = appState.reviewSuggestions;
-          final primaryReview = reviewSuggestions.isNotEmpty ? reviewSuggestions.first : null;
-          final actionLesson = primaryReview?.lesson ?? nextLesson;
-
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              ProgressBanner(completed: appState.completedLessons.length, total: appState.totalLessons),
-              const SizedBox(height: 16),
-              Row(children: [
-                Expanded(child: StatCard(icon: '🏆', value: '${appState.completedLessons.length}', label: 'Aulas concluídas')),
-                const SizedBox(width: 12),
-                Expanded(child: StatCard(icon: '⏱', value: '${appState.totalMinutes}', label: 'Minutos estudados')),
-              ]),
-              const SizedBox(height: 20),
-              if (actionLesson != null) ...[
-                InfoCard(
-                  icon: primaryReview == null ? '▶️' : '🔁',
-                  title: primaryReview == null ? 'Continue de onde parou' : 'Revisar esta aula',
-                  text: primaryReview == null
-                      ? '${actionLesson.title} • ${actionLesson.duration}'
-                      : 'Tema ${primaryReview.category.name}: ${primaryReview.score}/${primaryReview.total}. Refaça ${actionLesson.title} para reforçar.',
-                ),
-                const SizedBox(height: 10),
-                SeniorButton(
-                  label: primaryReview == null ? 'Continuar aula' : 'Revisar aula',
-                  icon: primaryReview == null ? Icons.play_arrow : Icons.replay,
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => LessonPage(lesson: actionLesson))),
-                ),
-                const SizedBox(height: 20),
-              ],
-              Text('Medalhas', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 10),
-              ...appState.achievements.map((achievement) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: AchievementCard(achievement: achievement),
-                  )),
-              const SizedBox(height: 10),
-              Text('Sugestões de revisão', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 10),
-              if (reviewSuggestions.isEmpty)
-                const InfoCard(icon: '✨', title: 'Tudo em dia', text: 'Quando algum quiz tiver pontos a melhorar, as aulas aparecerão aqui para revisão.'),
-              ...reviewSuggestions.map((suggestion) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: InfoCard(
-                      icon: suggestion.category.emoji,
-                      title: suggestion.category.name,
-                      text: 'Pontuação do tema: ${suggestion.score}/${suggestion.total}. Aula indicada: ${suggestion.lesson.title}.',
-                    ),
-                  )),
-              const SizedBox(height: 20),
-              Text('Histórico', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 10),
-              if (appState.completedLessons.isEmpty) const InfoCard(icon: '🌱', title: 'Comece hoje', text: 'Conclua sua primeira aula para ver seu histórico aqui.'),
-              ...appState.chronologicalHistory.map((item) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: InfoCard(
-                    icon: '✅',
-                    title: item.lesson.title,
-                    text: 'Quiz: ${item.score}/${item.lesson.quiz.length} • ${item.lesson.duration} • Concluída em ${_formatDateTime(item.completedAt)}',
-                  ),
-                );
-              }),
-            ],
-          );
-        },
+        builder: (context, _) => ListView(
+          padding: EdgeInsets.all(16 * appState.accessibilitySettings.contentSpacing),
+          children: [
+            ProgressBanner(completed: appState.completedLessons.length, total: appState.totalLessons),
+            SizedBox(height: 16 * appState.accessibilitySettings.contentSpacing),
+            Row(children: [
+              Expanded(child: StatCard(icon: '🏆', value: '${appState.completedLessons.length}', label: 'Aulas concluídas')),
+              SizedBox(width: 12 * appState.accessibilitySettings.contentSpacing),
+              Expanded(child: StatCard(icon: '⏱', value: '${appState.totalMinutes}', label: 'Minutos estudados')),
+            ]),
+            SizedBox(height: 20 * appState.accessibilitySettings.contentSpacing),
+            Text('Histórico', style: Theme.of(context).textTheme.titleLarge),
+            SizedBox(height: 10 * appState.accessibilitySettings.contentSpacing),
+            if (appState.completedLessons.isEmpty) const InfoCard(icon: '🌱', title: 'Comece hoje', text: 'Conclua sua primeira aula para ver seu histórico aqui.'),
+            ...appState.completedLessons.map((id) {
+              final lesson = lessonById(id)!;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: InfoCard(icon: '✅', title: lesson.title, text: 'Quiz: ${appState.quizScores[id] ?? 0}/${lesson.quiz.length} • ${lesson.duration}'),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }

@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
       title: 'O que vamos aprender hoje?',
       subtitle: 'Escolha um tema. Cada aula tem passos curtos, dicas e quiz.',
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16 * appState.accessibilitySettings.contentSpacing),
         children: [
           AnimatedBuilder(
             animation: appState,
@@ -29,12 +29,12 @@ class HomePage extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          ...learningTracks.map((category) => Padding(
+          SizedBox(height: 20 * appState.accessibilitySettings.contentSpacing),
+          ...categories.map((category) => Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: CategoryCard(category: category),
               )),
-          const SizedBox(height: 20),
+          SizedBox(height: 20 * appState.accessibilitySettings.contentSpacing),
           const EmergencyCard(),
         ],
       ),
@@ -66,13 +66,13 @@ class CategoryCard extends StatelessWidget {
               backgroundColor: category.color,
               child: Text(category.emoji, style: const TextStyle(fontSize: 34)),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16 * appState.accessibilitySettings.contentSpacing),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(category.name, style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 6),
-                Text(category.description, style: const TextStyle(fontSize: 18, color: appMutedTextColor)),
-                const SizedBox(height: 10),
+                 Text(category.description, style: const TextStyle(fontSize: 18, color: _muted)),
+                SizedBox(height: 10 * appState.accessibilitySettings.contentSpacing),
                 LinearProgressIndicator(
                   value: category.lessons.isEmpty ? 0 : done / category.lessons.length,
                   minHeight: 10,
@@ -102,7 +102,7 @@ class CategoryPage extends StatelessWidget {
       subtitle: category.description,
       showBack: true,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16 * appState.accessibilitySettings.contentSpacing),
         itemCount: category.lessons.length,
         itemBuilder: (context, index) {
           final lesson = category.lessons[index];
@@ -133,13 +133,13 @@ class LessonTile extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(color: unlocked || completed ? _panel : _panel.withOpacity(0.55), borderRadius: BorderRadius.circular(24)),
         child: Row(children: [
-          Text(completed ? '✅' : unlocked ? lesson.emoji : '🔒', style: const TextStyle(fontSize: 42)),
-          const SizedBox(width: 16),
+          Text(completed ? '✅' : lesson.emoji, style: const TextStyle(fontSize: 42)),
+          SizedBox(width: 16 * appState.accessibilitySettings.contentSpacing),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(lesson.title, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 6),
-            Text(lesson.description, style: const TextStyle(fontSize: 17, color: appMutedTextColor)),
-            const SizedBox(height: 10),
+            Text(lesson.description, style: const TextStyle(fontSize: 17, color: _muted)),
+            SizedBox(height: 10 * appState.accessibilitySettings.contentSpacing),
             Wrap(spacing: 10, runSpacing: 8, children: [
               Chip(label: Text('⏱ ${lesson.duration}')),
               Chip(label: Text('⭐ ${lesson.difficulty}')),
@@ -248,7 +248,7 @@ class _LessonPageState extends State<LessonPage> {
         padding: const EdgeInsets.all(18),
         child: Column(children: [
           LinearProgressIndicator(value: progress, minHeight: 12, borderRadius: BorderRadius.circular(99)),
-          const SizedBox(height: 20),
+          SizedBox(height: 20 * appState.accessibilitySettings.contentSpacing),
           Expanded(
             child: SingleChildScrollView(
               child: Container(
@@ -257,7 +257,7 @@ class _LessonPageState extends State<LessonPage> {
                 decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(32)),
                 child: Column(children: [
                   Text(item.emoji, style: const TextStyle(fontSize: 88)),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16 * appState.accessibilitySettings.contentSpacing),
                   Text(item.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 18),
                   Text(item.content, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyLarge),
@@ -273,11 +273,11 @@ class _LessonPageState extends State<LessonPage> {
                     ),
                   ],
                   if (item.tip != null) ...[
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20 * appState.accessibilitySettings.contentSpacing),
                     InfoCard(icon: '💡', title: 'Dica', text: item.tip!),
                   ],
                   if (item.warning != null) ...[
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20 * appState.accessibilitySettings.contentSpacing),
                     WarningCard(text: item.warning!),
                   ],
                 ]),
@@ -297,7 +297,7 @@ class _LessonPageState extends State<LessonPage> {
                   },
                 ),
               ),
-            if (step > 0) const SizedBox(width: 12),
+            if (step > 0) SizedBox(width: 12 * appState.accessibilitySettings.contentSpacing),
             Expanded(
               flex: 2,
               child: SeniorButton(
@@ -334,7 +334,7 @@ class _LessonPageState extends State<LessonPage> {
             const InfoCard(icon: '✅', title: 'Como funciona', text: 'Toque em uma resposta. Você verá uma explicação após escolher.'),
             const SizedBox(height: 24),
             SeniorButton(label: 'Começar quiz', icon: Icons.psychology, onPressed: () => setState(() => phase = LessonPhase.quiz)),
-            const SizedBox(height: 12),
+            SizedBox(height: 12 * appState.accessibilitySettings.contentSpacing),
             TextButton(
               onPressed: () {
                 appState.completeLesson(widget.lesson.id, 0);
@@ -369,7 +369,7 @@ class _LessonPageState extends State<LessonPage> {
                   decoration: BoxDecoration(color: appPanelColor, borderRadius: BorderRadius.circular(28)),
                   child: Text(q.question, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16 * appState.accessibilitySettings.contentSpacing),
                 ...List.generate(q.options.length, (i) {
                   final isCorrect = i == q.correct;
                   final isSelected = i == selected;
@@ -431,8 +431,8 @@ class _LessonPageState extends State<LessonPage> {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const Text('🎉', style: TextStyle(fontSize: 96)),
             Text(widget.lesson.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 16),
-            Text('Resultado do quiz: $score/$total', style: const TextStyle(fontSize: 28, color: appAccentColor, fontWeight: FontWeight.w900)),
+            SizedBox(height: 16 * appState.accessibilitySettings.contentSpacing),
+            Text('Resultado do quiz: $score/$total', style: const TextStyle(fontSize: 28, color: _line, fontWeight: FontWeight.w900)),
             const SizedBox(height: 24),
             SeniorButton(label: 'Voltar para lições', icon: Icons.check, onPressed: () => Navigator.of(context).pop()),
           ]),

@@ -8,23 +8,16 @@ class AppState extends ChangeNotifier {
     ProgressService? progressService,
     ProfileRepository? profileRepository,
   })  : _progressRepository = progressRepository ?? InMemoryProgressRepository(),
-        _progressService = progressService ?? progressServiceDefault,
-        _profileRepository = profileRepository ?? LocalProfileRepository() {
-    userProfile = _profileRepository.loadProfile();
+        _progressService = progressService ?? progressServiceDefault {
+    accessibilitySettings = _progressRepository.getAccessibilitySettings();
   }
 
   final ProgressRepository _progressRepository;
   final ProgressService _progressService;
-  final ProfileRepository _profileRepository;
-  double textScale = 1;
-  bool highContrast = true;
-  bool readAloudEnabled = false;
+  late AccessibilitySettings accessibilitySettings;
 
-  AccessibilitySettings get accessibilitySettings => AccessibilitySettings(
-        textScale: textScale,
-        highContrast: highContrast,
-        readAloudEnabled: readAloudEnabled,
-      );
+  double get textScale => accessibilitySettings.textScale;
+  bool get highContrast => accessibilitySettings.highContrast;
 
   Set<String> get completedLessons => _progressRepository.getCompletedLessons();
   Map<String, int> get quizScores => _progressRepository.getQuizScores();
@@ -42,12 +35,32 @@ class AppState extends ChangeNotifier {
   }
 
   void toggleContrast() {
-    highContrast = !highContrast;
-    notifyListeners();
+    updateAccessibilitySettings(accessibilitySettings.copyWith(highContrast: !highContrast));
   }
 
   void setTextScale(double value) {
-    textScale = value;
+    updateAccessibilitySettings(accessibilitySettings.copyWith(textScale: value));
+  }
+
+  void setLowLightTheme(bool value) {
+    updateAccessibilitySettings(accessibilitySettings.copyWith(lowLightTheme: value));
+  }
+
+  void setButtonScale(double value) {
+    updateAccessibilitySettings(accessibilitySettings.copyWith(buttonScale: value));
+  }
+
+  void setContentSpacing(double value) {
+    updateAccessibilitySettings(accessibilitySettings.copyWith(contentSpacing: value));
+  }
+
+  void setDyslexiaFriendlyFont(bool value) {
+    updateAccessibilitySettings(accessibilitySettings.copyWith(dyslexiaFriendlyFont: value));
+  }
+
+  void updateAccessibilitySettings(AccessibilitySettings settings) {
+    accessibilitySettings = settings;
+    _progressRepository.saveAccessibilitySettings(settings);
     notifyListeners();
   }
 

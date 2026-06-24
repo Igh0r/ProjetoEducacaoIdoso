@@ -1,83 +1,40 @@
 abstract class ProgressRepository {
   Set<String> getCompletedLessons();
   Map<String, int> getQuizScores();
-  Map<String, DateTime> getCompletionDates();
+  Map<String, List<QuizAttempt>> getQuizAttempts();
+  QuizAttempt? getLatestQuizAttempt(String lessonId);
+  QuizAttempt? getBestQuizAttempt(String lessonId);
   void completeLesson(String lessonId, int score);
-  AccessibilitySettings getAccessibilitySettings();
-  void saveAccessibilitySettings(AccessibilitySettings settings);
+  void saveQuizAttempt(QuizAttempt attempt);
 }
 
 class InMemoryProgressRepository implements ProgressRepository {
   final Set<String> _completedLessons = <String>{};
   final Map<String, int> _quizScores = <String, int>{};
-  Map<String, Object> _localProgressAccessibility = const AccessibilitySettings().toLocalProgressJson();
-
-  @override
-  Map<String, int> getQuizScores() => Map.unmodifiable(_quizScores);
-
-  @override
-  Map<String, DateTime> getCompletionDates() => _completionDates;
-
-  @override
-  void completeLesson(String lessonId, int score) {
-    _completedLessons.add(lessonId);
-    _quizScores[lessonId] = score;
-    _completionDates[lessonId] = DateTime.now();
-  }
-}
-
-class SqliteProgressRepository implements ProgressRepository {
-  static const _databaseName = 'educacao_idoso.db';
-  static const _databaseVersion = 1;
-  static const _completedLessonsTable = 'completed_lessons';
-
-  Database? _database;
-  final Set<String> _completedLessons = <String>{};
-  final Map<String, int> _quizScores = <String, int>{};
-
-  Future<void> init() async {
-    final databasePath = await getDatabasesPath();
-    _database = await openDatabase(
-      p.join(databasePath, _databaseName),
-      version: _databaseVersion,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE $_completedLessonsTable (
-            lesson_id TEXT PRIMARY KEY,
-            score INTEGER NOT NULL,
-            completed_at TEXT NOT NULL
-          )
-        ''');
-      },
-    );
-    await _loadCompletedLessons();
-  }
-
-  Future<void> _loadCompletedLessons() async {
-    final db = _database;
-    if (db == null) return;
-
-    final rows = await db.query(_completedLessonsTable);
-    _completedLessons
-      ..clear()
-      ..addAll(rows.map((row) => row['lesson_id']! as String));
-    _quizScores
-      ..clear()
-      ..addEntries(
-        rows.map(
-          (row) => MapEntry(
-            row['lesson_id']! as String,
-            row['score']! as int,
-          ),
-        ),
-      );
-  }
+  final Map<String, List<QuizAttempt>> _quizAttempts = <String, List<QuizAttempt>>{};
 
   @override
   Set<String> getCompletedLessons() => Set.unmodifiable(_completedLessons);
 
   @override
   Map<String, int> getQuizScores() => Map.unmodifiable(_quizScores);
+
+  @override
+  Map<String, List<QuizAttempt>> getQuizAttempts() => _quizAttempts;
+
+  @override
+  QuizAttempt? getLatestQuizAttempt(String lessonId) {
+    final attempts = _quizAttempts[lessonId];
+    if (attempts == null || attempts.isEmpty) return null;
+    return attempts.reduce((latest, attempt) => attempt.finishedAt.isAfter(latest.finishedAt) ? attempt : latest);
+  }
+
+  @override
+  QuizAttempt? getBestQuizAttempt(String lessonId) {
+    final attempts = _quizAttempts[lessonId];
+    if (attempts == null || attempts.isEmpty) return null;
+    return attempts.reduce((best, attempt) => attempt.score > best.score ? attempt : best);
+  }
 
   @override
   void completeLesson(String lessonId, int score) {
@@ -104,5 +61,11 @@ class SqliteProgressRepository implements ProgressRepository {
   @override
   void saveAccessibilitySettings(AccessibilitySettings settings) {
     _localProgressAccessibility = settings.toLocalProgressJson();
+  }
+
+  @override
+  void saveQuizAttempt(QuizAttempt attempt) {
+    _quizAttempts.putIfAbsent(attempt.lessonId, () => <QuizAttempt>[]).add(attempt);
+    completeLesson(attempt.lessonId, attempt.score);
   }
 }

@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 part 'app/theme/app_theme.dart';
 part 'features/learning/models/learning_models.dart';
+part 'features/learning/models/quiz_attempt.dart';
 part 'features/assistant/models/chat_message.dart';
 part 'features/apps/models/app_models.dart';
 part 'features/accessibility/models/accessibility_settings.dart';

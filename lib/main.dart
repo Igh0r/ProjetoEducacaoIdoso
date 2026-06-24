@@ -1,14 +1,19 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 part 'app/theme/app_theme.dart';
 part 'features/learning/models/learning_models.dart';
 part 'features/assistant/models/chat_message.dart';
 part 'features/apps/models/app_models.dart';
+part 'features/profile/models/user_profile.dart';
 part 'features/learning/data/lesson_seed_data.dart';
 part 'features/apps/data/app_seed_data.dart';
 part 'features/learning/repositories/lesson_repository.dart';
 part 'features/learning/utils/lesson_utils.dart';
 part 'features/progress/repositories/progress_repository.dart';
+part 'features/profile/repositories/profile_repository.dart';
 part 'features/progress/services/progress_service.dart';
 part 'features/assistant/services/assistant_answer_service.dart';
 part 'features/apps/services/app_launch_service.dart';

@@ -64,7 +64,7 @@ class AppTheme {
         bodyLarge: TextStyle(fontSize: 20, height: settings.contentSpacing, color: textColor, letterSpacing: settings.dyslexiaFriendlyFont ? .25 : null),
         bodyMedium: TextStyle(fontSize: 18, height: settings.contentSpacing, color: textColor, letterSpacing: settings.dyslexiaFriendlyFont ? .2 : null),
       ),
-      cardTheme: CardTheme(color: panel, margin: EdgeInsets.all(12 * settings.contentSpacing)),
+      cardTheme: CardThemeData(color: panel, margin: EdgeInsets.all(12 * settings.contentSpacing)),
       dividerColor: highContrast ? accent : Colors.white24,
       useMaterial3: true,
     );

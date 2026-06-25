@@ -3,7 +3,7 @@ import 'package:educacao_idoso/features/profile/models/user_profile.dart';
 class AssistantAnswerService {
   const AssistantAnswerService();
 
-  String answerFor(String question) {
+  String answerFor(String question, {UserProfile? profile}) {
     final normalizedQuestion = _normalize(question);
 
     for (final intent in _assistantIntents) {

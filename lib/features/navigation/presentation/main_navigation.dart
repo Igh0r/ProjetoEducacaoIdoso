@@ -40,7 +40,7 @@ class _MainNavigationState extends State<MainNavigation> {
             selectedIndex: index,
             backgroundColor: appPanelColor,
             indicatorColor: appAccentColor,
-            labelTextStyle: WidgetStateProperty.all(const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+            labelTextStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
             onDestinationSelected: (value) => setState(() => index = value),
             destinations: const [
               NavigationDestination(icon: Icon(Icons.school), label: 'Aprender'),

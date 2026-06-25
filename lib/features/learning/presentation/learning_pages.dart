@@ -214,13 +214,23 @@ class LessonPage extends StatefulWidget {
 }
 
 class _LessonPageState extends State<LessonPage> {
-  int step = 0;
-  int quiz = 0;
-  int score = 0;
-  int? selected;
+  late final LessonSessionController controller;
+  final TextToSpeechService _textToSpeechService = textToSpeechService;
   bool attemptSaved = false;
-  LessonPhase phase = LessonPhase.steps;
-  final Map<int, int> selectedAnswers = <int, int>{};
+
+  AccessibilitySettings get accessibilitySettings => appState.accessibilitySettings;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = LessonSessionController(widget.lesson);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -329,8 +339,8 @@ class _LessonPageState extends State<LessonPage> {
             const SizedBox(height: 12),
             TextButton(
               onPressed: () {
+                controller.skipQuiz();
                 _saveAttempt();
-                setState(() => phase = LessonPhase.done);
               },
               child: const Text('Pular quiz e concluir', style: TextStyle(fontSize: 20)),
             ),
@@ -378,13 +388,7 @@ class _LessonPageState extends State<LessonPage> {
                           padding: const EdgeInsets.all(20),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
                         ),
-                        onPressed: answered
-                            ? null
-                            : () => setState(() {
-                                  selected = i;
-                                  selectedAnswers[quiz] = i;
-                                  if (isCorrect) score++;
-                                }),
+                        onPressed: answered ? null : () => controller.selectAnswer(i),
                         child: Text(q.options[i], textAlign: TextAlign.center, style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800)),
                       ),
                     ),
@@ -398,15 +402,10 @@ class _LessonPageState extends State<LessonPage> {
             SeniorButton(
               label: controller.isLastQuestion ? 'Ver resultado' : 'Próxima pergunta',
               icon: Icons.arrow_forward,
-              onPressed: () => setState(() {
-                if (quiz == widget.lesson.quiz.length - 1) {
-                  _saveAttempt();
-                  phase = LessonPhase.done;
-                } else {
-                  quiz++;
-                  selected = null;
-                }
-              }),
+              onPressed: () {
+                controller.goToNextQuestion();
+                if (controller.phase == LessonPhase.done) _saveAttempt();
+              },
             ),
         ]),
       ),
@@ -429,7 +428,7 @@ class _LessonPageState extends State<LessonPage> {
               const Text('🎉', style: TextStyle(fontSize: 80)),
               Text(widget.lesson.title, textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 16),
-              Text('Resultado do quiz: $score/$total', style: const TextStyle(fontSize: 28, color: appAccentColor, fontWeight: FontWeight.w900)),
+              Text('Resultado do quiz: ${controller.score}/$total', style: const TextStyle(fontSize: 28, color: appAccentColor, fontWeight: FontWeight.w900)),
             ]),
           ),
           const SizedBox(height: 20),
@@ -445,7 +444,7 @@ class _LessonPageState extends State<LessonPage> {
 
   Widget _reviewCard(int index) {
     final question = widget.lesson.quiz[index];
-    final selectedIndex = selectedAnswers[index];
+    final selectedIndex = controller.selectedAnswers[index];
     final isCorrect = selectedIndex == question.correct;
     final statusColor = isCorrect ? Colors.green.shade700 : Colors.red.shade700;
     final statusIcon = isCorrect ? Icons.check_circle : Icons.cancel;
@@ -491,8 +490,8 @@ class _LessonPageState extends State<LessonPage> {
     if (attemptSaved) return;
     appState.saveQuizAttempt(QuizAttempt(
       lessonId: widget.lesson.id,
-      selectedAnswers: Map.unmodifiable(selectedAnswers),
-      score: score,
+      selectedAnswers: Map.unmodifiable(controller.selectedAnswers),
+      score: controller.score,
       finishedAt: DateTime.now(),
     ));
     attemptSaved = true;

@@ -20,7 +20,7 @@ Este projeto transforma o material original da pasta `sourceMaterial` em um apli
 3. **Categoria**: mostra aulas do tema selecionado.
 4. **Aula**: apresenta passos guiados, dicas, alertas e quiz.
 5. **Meus Aplicativos**: grade de apps úteis com mensagens educativas e números de emergência.
-6. **Assistente Digital**: chat local para dúvidas frequentes sobre segurança, PIX, gov.br e remédios.
+6. **Assistente Digital**: chat remoto com IA online para dúvidas frequentes sobre segurança, PIX, gov.br, remédios e uso do celular.
 7. **Progresso**: resumo de aulas concluídas, minutos estudados e histórico.
 8. **Perfil**: ajustes de acessibilidade e saída.
 
@@ -37,7 +37,7 @@ lib/features/learning/data/                       # Conteúdo local das aulas e 
 lib/features/learning/repositories/               # Contratos e fonte local de aulas.
 lib/features/learning/presentation/               # Telas e widgets da seção Aprender.
 lib/features/apps/models|data|services|presentation/ # Lançador educativo de apps úteis.
-lib/features/assistant/models|services|presentation/ # Assistente local com respostas determinísticas.
+lib/features/assistant/models|services|presentation/ # Assistente remoto com contrato assíncrono, cliente HTTP e tela de chat online.
 lib/features/progress/repositories|services|presentation/ # Persistência SQLite de progresso e cálculos de estudo.
 lib/features/profile/presentation/                # Ajustes de acessibilidade.
 lib/shared/widgets/                               # Componentes reutilizáveis para idosos.
@@ -93,11 +93,12 @@ flutter test
 - **Sem login real** nesta primeira entrega: reduz complexidade e facilita uso por idosos em protótipos.
 - **Persistência local com SQLite**: progresso e pontuações de quiz são carregados de um banco local ao iniciar o app e atualizados quando uma aula é concluída.
 - **Conteúdo local**: aulas e quizzes ficam embutidos para funcionar offline e sem conta externa.
-- **Sem IA externa**: o assistente usa respostas locais para evitar custo, latência e dependência de internet.
+- **Assistente exclusivamente remoto**: o chat com IA depende de internet e de um backend intermediário. A chave da OpenAI/GPT não deve ser embutida no aplicativo Flutter; a recomendação oficial da OpenAI é não expor chaves em apps mobile/client-side e rotear chamadas por backend próprio. O app envia apenas dados mínimos, exige consentimento e mostra mensagens claras quando a IA online está indisponível.
 
 ## Próximas melhorias sugeridas
 
 - Adicionar leitura em voz alta e comandos por voz.
+- Implementar o backend `/assistant/chat` com armazenamento seguro da chave, rate limit, logs sem dados sensíveis, guardrails para saúde/finanças/documentos e prompt versionado.
 - Integrar abertura real de aplicativos/links com `url_launcher`.
 - Criar onboarding para cadastro de familiar/cuidador.
 - Adicionar revisão detalhada de erros do quiz com histórico por tentativa.

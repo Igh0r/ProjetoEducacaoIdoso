@@ -66,6 +66,17 @@ class ProfilePage extends StatelessWidget {
               subtitle: const Text('Usa fonte monoespaçada com maior espaçamento entre letras.'),
             ),
             SizedBox(height: 16 * settings.contentSpacing),
+            SwitchListTile(
+              value: appState.userProfile.acceptedRemoteAssistantTerms,
+              onChanged: (value) => appState.saveUserProfile(appState.userProfile.copyWith(
+                acceptedRemoteAssistantTerms: value,
+                acceptedRemoteAssistantTermsAt: value ? DateTime.now() : null,
+                clearRemoteAssistantTermsAt: !value,
+              )),
+              title: const Text('Permitir assistente com IA online', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              subtitle: const Text('Envia suas perguntas para um serviço online de IA. Não digite senhas, códigos, documentos ou dados bancários.'),
+            ),
+            SizedBox(height: 16 * settings.contentSpacing),
             const EmergencyCard(),
             SizedBox(height: 16 * settings.contentSpacing),
             SeniorButton.secondary(
@@ -134,6 +145,8 @@ Future<void> showProfileEditor(BuildContext context, UserProfile initialProfile)
                 emergencyPhone: phoneController.text.trim(),
                 trustedContactName: contactController.text.trim(),
                 preferences: preferencesController.text.trim(),
+                acceptedRemoteAssistantTerms: initialProfile.acceptedRemoteAssistantTerms,
+                acceptedRemoteAssistantTermsAt: initialProfile.acceptedRemoteAssistantTermsAt,
               ));
               if (context.mounted) Navigator.of(context).pop();
             },

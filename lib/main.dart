@@ -4,6 +4,7 @@ import 'package:educacao_idoso/features/progress/repositories/progress_repositor
 import 'package:flutter/material.dart';
 
 export 'app/theme/app_theme.dart';
+export 'core/config/app_config.dart';
 export 'core/state/app_state.dart';
 export 'features/accessibility/models/accessibility_settings.dart';
 export 'features/accessibility/services/accessibility_service.dart';
@@ -13,7 +14,12 @@ export 'features/apps/models/app_models.dart';
 export 'features/apps/repositories/app_repository.dart';
 export 'features/apps/services/app_launch_service.dart';
 export 'features/assistant/models/chat_message.dart';
-export 'features/assistant/services/assistant_answer_service.dart';
+export 'features/assistant/models/assistant_error.dart';
+export 'features/assistant/models/assistant_request.dart';
+export 'features/assistant/models/assistant_response.dart';
+export 'features/assistant/services/assistant_conversation_controller.dart';
+export 'features/assistant/services/assistant_service.dart';
+export 'features/assistant/services/remote_assistant_service.dart';
 export 'features/learning/data/lesson_seed_data.dart';
 export 'features/learning/models/learning_models.dart';
 export 'features/learning/models/quiz_attempt.dart';

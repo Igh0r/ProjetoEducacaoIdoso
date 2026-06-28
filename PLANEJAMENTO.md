@@ -34,7 +34,7 @@
 - Abrir apps e sites oficiais com confirmação clara.
 - Adicionar mapas, telefone e links de serviços públicos.
 - Integrar vídeos oficiais ou curadoria de tutoriais.
-- Considerar assistente com IA somente com consentimento e proteção de dados.
+- Usar assistente remoto com IA somente após consentimento explícito, proteção de dados, minimização do payload e backend intermediário para proteger a chave.
 
 ## Critérios de aceite da primeira entrega
 

@@ -1,4 +1,5 @@
 import 'package:educacao_idoso/main.dart';
+import 'package:educacao_idoso/features/learning/presentation/learning_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -26,7 +26,9 @@ class AppState extends ChangeNotifier {
   late UserProfile userProfile;
 
   double get textScale => accessibilitySettings.textScale;
+  set textScale(double value) => setTextScale(value);
   bool get highContrast => accessibilitySettings.highContrast;
+  set highContrast(bool value) => setHighContrast(value);
   Map<String, DateTime> get completionDates => _progressRepository.getCompletionDates();
   Set<String> get completedLessons => _progressRepository.getCompletedLessons();
   Map<String, int> get quizScores => _progressRepository.getQuizScores();
@@ -44,6 +46,7 @@ class AppState extends ChangeNotifier {
   void completeLesson(String id, int score) { _progressRepository.completeLesson(id, score); notifyListeners(); }
   void saveQuizAttempt(QuizAttempt attempt) { _progressRepository.saveQuizAttempt(attempt); notifyListeners(); }
   void toggleContrast() => updateAccessibilitySettings(accessibilitySettings.copyWith(highContrast: !highContrast));
+  void setHighContrast(bool value) => updateAccessibilitySettings(accessibilitySettings.copyWith(highContrast: value));
   void setTextScale(double value) => updateAccessibilitySettings(accessibilitySettings.copyWith(textScale: value));
   void setLowLightTheme(bool value) => updateAccessibilitySettings(accessibilitySettings.copyWith(lowLightTheme: value));
   void setButtonScale(double value) => updateAccessibilitySettings(accessibilitySettings.copyWith(buttonScale: value));

@@ -14,7 +14,7 @@ class AssistantPage extends StatefulWidget {
 class _AssistantPageState extends State<AssistantPage> {
   final controller = TextEditingController();
   final messages = <ChatMessage>[
-    const ChatMessage(false, 'Olá! 😊 Sou seu Assistente Digital. Pergunte sobre WhatsApp, gov.br, INSS, PIX, remédios, SUS ou segurança.'),
+    const ChatMessage(false, 'Olá! 😊 Sou seu Assistente Digital. Posso ajudar com WhatsApp, gov.br, INSS, PIX, remédios, SUS, segurança e emergências.'),
   ];
 
   @override
@@ -37,7 +37,7 @@ class _AssistantPageState extends State<AssistantPage> {
   Widget build(BuildContext context) {
     return AppShell(
       title: '🤖 Assistente Digital',
-      subtitle: 'Pergunte qualquer coisa.',
+      subtitle: 'Pergunte sobre os temas abaixo.',
       child: Column(children: [
         Expanded(
           child: ListView.builder(
@@ -46,10 +46,17 @@ class _AssistantPageState extends State<AssistantPage> {
             itemBuilder: (context, index) => ChatBubble(message: messages[index]),
           ),
         ),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: ['Como evitar golpes?', 'Como usar PIX?', 'Esqueci a senha gov.br'].map((s) => ActionChip(label: Text(s), onPressed: () => send(s))).toList(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('Assuntos disponíveis: WhatsApp, gov.br, INSS, PIX, remédios, SUS, segurança e emergências.', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: ['Como evitar golpes?', 'Como usar PIX?', 'Esqueci a senha gov.br'].map((s) => ActionChip(label: Text(s), onPressed: () => send(s))).toList(),
+            ),
+          ]),
         ),
         Padding(
           padding: const EdgeInsets.all(12),
@@ -70,7 +77,7 @@ class _AssistantPageState extends State<AssistantPage> {
               ),
             ),
             const SizedBox(width: 10),
-            FilledButton(onPressed: send, style: FilledButton.styleFrom(padding: const EdgeInsets.all(18)), child: const Icon(Icons.send, size: 30)),
+            FilledButton.icon(onPressed: send, style: FilledButton.styleFrom(padding: const EdgeInsets.all(18)), icon: const Icon(Icons.send, size: 30), label: const Text('Enviar', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900))),
           ]),
         ),
       ]),

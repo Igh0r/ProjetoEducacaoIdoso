@@ -65,6 +65,24 @@ class ProfilePage extends StatelessWidget {
               title: const Text('Fonte amigável para dislexia', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
               subtitle: const Text('Usa fonte monoespaçada com maior espaçamento entre letras.'),
             ),
+            SwitchListTile(
+              value: settings.readAloudEnabled,
+              onChanged: appState.setReadAloudEnabled,
+              title: const Text('Ler aulas em voz alta', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              subtitle: const Text('Mostra o botão “Ouvir explicação” durante as aulas, quando houver voz disponível no sistema.'),
+            ),
+            SeniorButton.secondary(
+              label: 'Restaurar configurações padrão',
+              icon: Icons.restore,
+              onPressed: () {
+                final previous = appState.accessibilitySettings;
+                appState.resetAccessibilitySettings();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: const Text('Configurações de acessibilidade restauradas.'),
+                  action: SnackBarAction(label: 'Desfazer', onPressed: () => appState.updateAccessibilitySettings(previous)),
+                ));
+              },
+            ),
             SizedBox(height: 16 * settings.contentSpacing),
             const EmergencyCard(),
             SizedBox(height: 16 * settings.contentSpacing),
@@ -108,34 +126,55 @@ Future<void> showProfileEditor(BuildContext context, UserProfile initialProfile)
   final phoneController = TextEditingController(text: initialProfile.emergencyPhone);
   final contactController = TextEditingController(text: initialProfile.trustedContactName);
   final preferencesController = TextEditingController(text: initialProfile.preferences);
+  final formKey = GlobalKey<FormState>();
+
+  String? phoneError(String? value) {
+    final phone = (value ?? '').trim();
+    if (phone.isEmpty) return 'Informe um telefone de emergência.';
+    final digits = phone.replaceAll(RegExp(r'\D'), '');
+    if (digits.length < 8 || digits.length > 13) return 'Use um formato como (11) 99999-9999.';
+    return null;
+  }
 
   try {
     await showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Perfil opcional'),
         content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Nome')),
-              TextField(controller: phoneController, decoration: const InputDecoration(labelText: 'Telefone de emergência'), keyboardType: TextInputType.phone),
-              TextField(controller: contactController, decoration: const InputDecoration(labelText: 'Contato de confiança')),
-              TextField(controller: preferencesController, decoration: const InputDecoration(labelText: 'Preferências'), maxLines: 2),
-            ],
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(controller: nameController, decoration: const InputDecoration(labelText: 'Nome (opcional)')),
+                TextFormField(
+                  controller: phoneController,
+                  decoration: const InputDecoration(labelText: 'Telefone de emergência (obrigatório)', helperText: 'Exemplo: (11) 99999-9999'),
+                  keyboardType: TextInputType.phone,
+                  validator: phoneError,
+                ),
+                TextFormField(controller: contactController, decoration: const InputDecoration(labelText: 'Contato de confiança (opcional)')),
+                TextFormField(controller: preferencesController, decoration: const InputDecoration(labelText: 'Preferências (opcional)'), maxLines: 2),
+              ],
+            ),
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Cancelar')),
           FilledButton(
             onPressed: () async {
+              if (!(formKey.currentState?.validate() ?? false)) return;
               await appState.saveUserProfile(UserProfile(
                 name: nameController.text.trim(),
                 emergencyPhone: phoneController.text.trim(),
                 trustedContactName: contactController.text.trim(),
                 preferences: preferencesController.text.trim(),
               ));
-              if (context.mounted) Navigator.of(context).pop();
+              if (!dialogContext.mounted) return;
+              Navigator.of(dialogContext).pop();
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Perfil salvo neste computador.'), behavior: SnackBarBehavior.floating));
             },
             child: const Text('Salvar'),
           ),

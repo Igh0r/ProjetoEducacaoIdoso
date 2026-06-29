@@ -4,11 +4,12 @@ import 'package:educacao_idoso/core/state/app_state.dart';
 import 'package:educacao_idoso/features/profile/models/user_profile.dart';
 
 class AppShell extends StatelessWidget {
-  const AppShell({this.title, this.subtitle, required this.child, this.showBack = false, super.key});
+  const AppShell({this.title, this.subtitle, required this.child, this.showBack = false, this.onBack, super.key});
   final String? title;
   final String? subtitle;
   final Widget child;
   final bool showBack;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,12 @@ class AppShell extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + 16, 16, 18),
               decoration: const BoxDecoration(color: appPanelColor, border: Border(bottom: BorderSide(color: appAccentColor, width: 4))),
               child: Row(children: [
-                if (showBack) IconButton(onPressed: () => Navigator.of(context).pop(), icon: const Icon(Icons.arrow_back, size: 32)),
+                if (showBack)
+                  TextButton.icon(
+                    onPressed: onBack ?? () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.arrow_back, size: 30),
+                    label: const Text('Voltar', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                  ),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(title!, style: Theme.of(context).textTheme.headlineMedium),
                   if (subtitle != null) Padding(padding: const EdgeInsets.only(top: 4), child: Text(subtitle!, style: const TextStyle(fontSize: 18, color: appMutedTextColor))),
@@ -155,9 +161,33 @@ class EmergencyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final trusted = profile?.trustedContactLabel ?? appState.userProfile.trustedContactLabel;
-    return WarningCard(
-      text: 'Emergência: SAMU 192 • Bombeiros 193 • Polícia 190 • CVV 188. Em risco imediato, ligue para o serviço adequado. Em dúvidas sobre PIX, golpes, segurança ou dados sensíveis, pare e confirme com $trusted.',
-    );
+    final spacing = appState.accessibilitySettings.contentSpacing;
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text('Telefones de emergência', style: Theme.of(context).textTheme.titleLarge),
+      SizedBox(height: 10 * spacing),
+      Wrap(spacing: 10, runSpacing: 10, children: const [
+        _EmergencyNumber(label: 'SAMU', number: '192', icon: '🚑'),
+        _EmergencyNumber(label: 'Bombeiros', number: '193', icon: '🚒'),
+        _EmergencyNumber(label: 'Polícia', number: '190', icon: '🚔'),
+        _EmergencyNumber(label: 'CVV', number: '188', icon: '💙'),
+      ]),
+      SizedBox(height: 12 * spacing),
+      WarningCard(text: 'Cuidados com golpes: nunca informe senhas, códigos ou PIX por telefone. Se estiver em dúvida, pare e confirme com $trusted.'),
+    ]);
   }
+}
+
+class _EmergencyNumber extends StatelessWidget {
+  const _EmergencyNumber({required this.label, required this.number, required this.icon});
+  final String label;
+  final String number;
+  final String icon;
+
+  @override
+  Widget build(BuildContext context) => Chip(
+        avatar: Text(icon),
+        label: Text('$label $number', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+        padding: const EdgeInsets.all(10),
+      );
 }
 

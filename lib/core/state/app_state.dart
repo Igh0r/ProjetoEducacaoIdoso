@@ -52,7 +52,9 @@ class AppState extends ChangeNotifier {
   void setButtonScale(double value) => updateAccessibilitySettings(accessibilitySettings.copyWith(buttonScale: value));
   void setContentSpacing(double value) => updateAccessibilitySettings(accessibilitySettings.copyWith(contentSpacing: value));
   void setDyslexiaFriendlyFont(bool value) => updateAccessibilitySettings(accessibilitySettings.copyWith(dyslexiaFriendlyFont: value));
-  void toggleReadAloud() => updateAccessibilitySettings(accessibilitySettings.copyWith(readAloudEnabled: !accessibilitySettings.readAloudEnabled));
+  void toggleReadAloud() => setReadAloudEnabled(!accessibilitySettings.readAloudEnabled);
+  void setReadAloudEnabled(bool value) => updateAccessibilitySettings(accessibilitySettings.copyWith(readAloudEnabled: value));
+  void resetAccessibilitySettings() => updateAccessibilitySettings(const AccessibilitySettings());
 
   void updateAccessibilitySettings(AccessibilitySettings settings) { accessibilitySettings = settings; _progressRepository.saveAccessibilitySettings(settings); notifyListeners(); }
   Future<void> saveUserProfile(UserProfile profile) async { userProfile = profile; await _profileRepository.saveProfile(profile); notifyListeners(); }

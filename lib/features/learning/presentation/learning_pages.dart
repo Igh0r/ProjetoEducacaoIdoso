@@ -258,6 +258,7 @@ class _LessonPageState extends State<LessonPage> {
       title: widget.lesson.title,
       subtitle: 'Passo ${controller.currentStep + 1} de ${widget.lesson.steps.length}',
       showBack: true,
+      onBack: () => _confirmExitLesson(context),
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(children: [
@@ -327,6 +328,7 @@ class _LessonPageState extends State<LessonPage> {
     return AppShell(
       title: '🧠 Hora do quiz!',
       showBack: true,
+      onBack: () => _confirmExitLesson(context),
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -357,6 +359,7 @@ class _LessonPageState extends State<LessonPage> {
       title: 'Quiz ${controller.currentQuestion + 1}/${widget.lesson.quiz.length}',
       subtitle: widget.lesson.title,
       showBack: true,
+      onBack: () => _confirmExitLesson(context),
       child: Padding(
         padding: const EdgeInsets.all(18),
         child: Column(children: [
@@ -485,6 +488,21 @@ class _LessonPageState extends State<LessonPage> {
         const SizedBox(width: 10),
         Expanded(child: Text('$label: $text', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
       ]);
+
+  Future<void> _confirmExitLesson(BuildContext context) async {
+    final shouldLeave = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sair da aula?'),
+        content: Text('Seu progresso até o passo ${controller.currentStep + 1} ficará registrado nesta sessão, mas a aula só será concluída após o quiz.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Continuar aula')),
+          FilledButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Sair')),
+        ],
+      ),
+    );
+    if (context.mounted && shouldLeave == true) Navigator.of(context).pop();
+  }
 
   void _saveAttempt() {
     if (attemptSaved) return;

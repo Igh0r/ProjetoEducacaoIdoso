@@ -63,4 +63,42 @@ void main() {
     expect(assistantAnswerService.answerFor('localizacao'),
         contains('localização'));
   });
+
+  test('responde usando GPT integrado quando o cliente retorna conteúdo', () async {
+    final service = AssistantAnswerService(
+      gptClient: _FakeGptAssistantClient(
+        answer: 'Resposta GPT integrada sobre segurança digital.',
+      ),
+    );
+
+    final answer = await service.answerForIntegrated('Como evitar golpes?');
+
+    expect(answer, 'Resposta GPT integrada sobre segurança digital.');
+  });
+
+  test('mantém resposta local quando o GPT integrado falha', () async {
+    final service = AssistantAnswerService(
+      gptClient: _FakeGptAssistantClient(throwsError: true),
+    );
+
+    final answer = await service.answerForIntegrated('Como usar PIX?');
+
+    expect(answer, contains('confira'));
+  });
+}
+
+class _FakeGptAssistantClient implements GptAssistantClient {
+  const _FakeGptAssistantClient({this.answer, this.throwsError = false});
+
+  final String? answer;
+  final bool throwsError;
+
+  @override
+  Future<String?> answer(String question, {UserProfile? profile}) async {
+    if (throwsError) {
+      throw Exception('Falha simulada no GPT');
+    }
+
+    return answer;
+  }
 }

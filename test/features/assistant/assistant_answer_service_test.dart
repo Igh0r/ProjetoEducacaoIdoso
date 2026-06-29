@@ -64,7 +64,8 @@ void main() {
         contains('localização'));
   });
 
-  test('responde usando GPT integrado quando o cliente retorna conteúdo', () async {
+  test('responde usando GPT integrado quando o cliente retorna conteúdo',
+      () async {
     final service = AssistantAnswerService(
       gptClient: _FakeGptAssistantClient(
         answer: 'Resposta GPT integrada sobre segurança digital.',

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:educacao_idoso/core/state/app_state.dart';
 import 'package:educacao_idoso/features/profile/models/user_profile.dart';
 
@@ -8,6 +10,120 @@ import 'package:educacao_idoso/features/profile/models/user_profile.dart';
 /// custo de uso.
 abstract class GptAssistantClient {
   Future<String?> answer(String question, {UserProfile? profile});
+}
+
+/// Função de transporte HTTP injetável para manter o app testável e evitar
+/// acoplar a regra do assistente a uma biblioteca específica.
+typedef GptHttpPost = Future<GptHttpResponse> Function(
+  Uri uri, {
+  required Map<String, String> headers,
+  required String body,
+});
+
+class GptHttpResponse {
+  const GptHttpResponse({required this.statusCode, required this.body});
+
+  final int statusCode;
+  final String body;
+}
+
+class GptAssistantConfig {
+  const GptAssistantConfig({
+    required this.endpoint,
+    this.apiKey = '',
+    this.model = 'gpt-5.5',
+  });
+
+  /// Endpoint de um backend seguro que chama a Responses API.
+  ///
+  /// Em produção, prefira um proxy/Cloud Function próprio em vez de colocar a
+  /// chave da OpenAI no aplicativo Flutter distribuído aos usuários.
+  final Uri endpoint;
+  final String apiKey;
+  final String model;
+
+  bool get hasApiKey => apiKey.trim().isNotEmpty;
+}
+
+/// Cliente GPT baseado na Responses API, pensado para ser usado contra um
+/// backend seguro ou ambiente controlado.
+class OpenAiResponsesAssistantClient implements GptAssistantClient {
+  const OpenAiResponsesAssistantClient({
+    required this.config,
+    required GptHttpPost httpPost,
+  }) : _httpPost = httpPost;
+
+  final GptAssistantConfig config;
+  final GptHttpPost _httpPost;
+
+  @override
+  Future<String?> answer(String question, {UserProfile? profile}) async {
+    final sanitizedQuestion = question.trim();
+    if (sanitizedQuestion.isEmpty) return null;
+
+    final response = await _httpPost(
+      config.endpoint,
+      headers: {
+        'Content-Type': 'application/json',
+        if (config.hasApiKey) 'Authorization': 'Bearer ${config.apiKey}',
+      },
+      body: jsonEncode({
+        'model': config.model,
+        'instructions': _systemInstructions(profile),
+        'input': sanitizedQuestion,
+      }),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw StateError('Falha GPT (${response.statusCode})');
+    }
+
+    final decoded = jsonDecode(response.body) as Map<String, Object?>;
+    return _extractOutputText(decoded)?.trim();
+  }
+
+  String _systemInstructions(UserProfile? profile) {
+    final buffer = StringBuffer()
+      ..write('Você é um assistente de educação digital para pessoas idosas no Brasil. ')
+      ..write('Responda em português do Brasil, com frases curtas, passo a passo, tom acolhedor e letras claras. ')
+      ..write('Nunca peça senha, código SMS, token, dados bancários completos ou fotos de documentos. ')
+      ..write('Quando houver risco financeiro, de saúde, segurança ou documento, oriente a confirmar em canal oficial e com contato de confiança. ')
+      ..write('Se a pergunta envolver urgência médica ou policial, cite canais oficiais como SAMU 192, Polícia 190 e Bombeiros 193.');
+
+    if (profile != null && profile.hasAnyData) {
+      buffer
+        ..write(' Perfil do usuário:')
+        ..write(profile.name.trim().isNotEmpty ? ' nome=${profile.name.trim()};' : '')
+        ..write(profile.preferences.trim().isNotEmpty ? ' preferências=${profile.preferences.trim()};' : '')
+        ..write(' contato de confiança=${profile.trustedContactLabel}.');
+    }
+
+    return buffer.toString();
+  }
+
+  String? _extractOutputText(Map<String, Object?> decoded) {
+    final outputText = decoded['output_text'];
+    if (outputText is String && outputText.trim().isNotEmpty) {
+      return outputText;
+    }
+
+    final output = decoded['output'];
+    if (output is! List) return null;
+
+    final chunks = <String>[];
+    for (final item in output) {
+      if (item is! Map) continue;
+      final content = item['content'];
+      if (content is! List) continue;
+      for (final contentItem in content) {
+        if (contentItem is! Map) continue;
+        final text = contentItem['text'];
+        if (text is String && text.trim().isNotEmpty) chunks.add(text.trim());
+      }
+    }
+
+    return chunks.isEmpty ? null : chunks.join('\n');
+  }
 }
 
 class AssistantAnswerService {

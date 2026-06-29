@@ -1,5 +1,6 @@
 import 'package:educacao_idoso/app/theme/app_theme.dart';
 import 'package:educacao_idoso/core/state/app_state.dart';
+import 'package:educacao_idoso/features/profile/repositories/profile_repository.dart';
 import 'package:educacao_idoso/features/progress/repositories/progress_repository.dart';
 import 'package:flutter/material.dart';
 
@@ -28,6 +29,9 @@ export 'shared/widgets/shared_widgets.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  appState = AppState(progressRepository: InMemoryProgressRepository());
+  appState = AppState(
+    progressRepository: InMemoryProgressRepository(),
+    profileRepository: InMemoryProfileRepository(),
+  );
   runApp(const EducacaoIdosoApp());
 }

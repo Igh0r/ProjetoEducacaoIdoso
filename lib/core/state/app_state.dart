@@ -12,7 +12,8 @@ class AppState extends ChangeNotifier {
     ProgressRepository? progressRepository,
     ProgressService? progressService,
     ProfileRepository? profileRepository,
-  })  : _progressRepository = progressRepository ?? InMemoryProgressRepository(),
+  })  : _progressRepository =
+            progressRepository ?? InMemoryProgressRepository(),
         _progressService = progressService ?? progressServiceDefault,
         _profileRepository = profileRepository ?? LocalProfileRepository() {
     accessibilitySettings = _progressRepository.getAccessibilitySettings();
@@ -29,35 +30,71 @@ class AppState extends ChangeNotifier {
   set textScale(double value) => setTextScale(value);
   bool get highContrast => accessibilitySettings.highContrast;
   set highContrast(bool value) => setHighContrast(value);
-  Map<String, DateTime> get completionDates => _progressRepository.getCompletionDates();
+  Map<String, DateTime> get completionDates =>
+      _progressRepository.getCompletionDates();
   Set<String> get completedLessons => _progressRepository.getCompletedLessons();
   Map<String, int> get quizScores => _progressRepository.getQuizScores();
-  Map<String, List<QuizAttempt>> get quizAttempts => _progressRepository.getQuizAttempts();
+  Map<String, List<QuizAttempt>> get quizAttempts =>
+      _progressRepository.getQuizAttempts();
   int get totalLessons => _progressService.totalLessons();
   int get totalMinutes => _progressService.totalMinutes(completedLessons);
-  List<ProgressAchievement> get achievements => _progressService.achievements(completedLessons, quizScores);
-  List<ReviewSuggestion> get reviewSuggestions => _progressService.reviewSuggestions(completedLessons, quizScores);
+  List<ProgressAchievement> get achievements =>
+      _progressService.achievements(completedLessons, quizScores);
+  List<ReviewSuggestion> get reviewSuggestions =>
+      _progressService.reviewSuggestions(completedLessons, quizScores);
   Lesson? get nextLesson => _progressService.nextLesson(completedLessons);
-  List<ProgressHistoryItem> get chronologicalHistory => _progressService.chronologicalHistory(completedLessons, quizScores, completionDates);
+  List<ProgressHistoryItem> get chronologicalHistory => _progressService
+      .chronologicalHistory(completedLessons, quizScores, completionDates);
 
-  QuizAttempt? latestQuizAttempt(String lessonId) => _progressRepository.getLatestQuizAttempt(lessonId);
-  QuizAttempt? bestQuizAttempt(String lessonId) => _progressRepository.getBestQuizAttempt(lessonId);
+  QuizAttempt? latestQuizAttempt(String lessonId) =>
+      _progressRepository.getLatestQuizAttempt(lessonId);
+  QuizAttempt? bestQuizAttempt(String lessonId) =>
+      _progressRepository.getBestQuizAttempt(lessonId);
 
-  void completeLesson(String id, int score) { _progressRepository.completeLesson(id, score); notifyListeners(); }
-  void saveQuizAttempt(QuizAttempt attempt) { _progressRepository.saveQuizAttempt(attempt); notifyListeners(); }
-  void toggleContrast() => updateAccessibilitySettings(accessibilitySettings.copyWith(highContrast: !highContrast));
-  void setHighContrast(bool value) => updateAccessibilitySettings(accessibilitySettings.copyWith(highContrast: value));
-  void setTextScale(double value) => updateAccessibilitySettings(accessibilitySettings.copyWith(textScale: value));
-  void setLowLightTheme(bool value) => updateAccessibilitySettings(accessibilitySettings.copyWith(lowLightTheme: value));
-  void setButtonScale(double value) => updateAccessibilitySettings(accessibilitySettings.copyWith(buttonScale: value));
-  void setContentSpacing(double value) => updateAccessibilitySettings(accessibilitySettings.copyWith(contentSpacing: value));
-  void setDyslexiaFriendlyFont(bool value) => updateAccessibilitySettings(accessibilitySettings.copyWith(dyslexiaFriendlyFont: value));
-  void toggleReadAloud() => setReadAloudEnabled(!accessibilitySettings.readAloudEnabled);
-  void setReadAloudEnabled(bool value) => updateAccessibilitySettings(accessibilitySettings.copyWith(readAloudEnabled: value));
-  void resetAccessibilitySettings() => updateAccessibilitySettings(const AccessibilitySettings());
+  void completeLesson(String id, int score) {
+    _progressRepository.completeLesson(id, score);
+    notifyListeners();
+  }
 
-  void updateAccessibilitySettings(AccessibilitySettings settings) { accessibilitySettings = settings; _progressRepository.saveAccessibilitySettings(settings); notifyListeners(); }
-  Future<void> saveUserProfile(UserProfile profile) async { userProfile = profile; await _profileRepository.saveProfile(profile); notifyListeners(); }
+  void saveQuizAttempt(QuizAttempt attempt) {
+    _progressRepository.saveQuizAttempt(attempt);
+    notifyListeners();
+  }
+
+  void toggleContrast() => updateAccessibilitySettings(
+      accessibilitySettings.copyWith(highContrast: !highContrast));
+  void setHighContrast(bool value) => updateAccessibilitySettings(
+      accessibilitySettings.copyWith(highContrast: value));
+  void setTextScale(double value) => updateAccessibilitySettings(
+      accessibilitySettings.copyWith(textScale: value));
+  void setLowLightTheme(bool value) => updateAccessibilitySettings(
+      accessibilitySettings.copyWith(lowLightTheme: value));
+  void setButtonScale(double value) => updateAccessibilitySettings(
+      accessibilitySettings.copyWith(buttonScale: value));
+  void setContentSpacing(double value) => updateAccessibilitySettings(
+      accessibilitySettings.copyWith(contentSpacing: value));
+  void setDyslexiaFriendlyFont(bool value) => updateAccessibilitySettings(
+      accessibilitySettings.copyWith(dyslexiaFriendlyFont: value));
+  void toggleReadAloud() =>
+      setReadAloudEnabled(!accessibilitySettings.readAloudEnabled);
+  void setReadAloudEnabled(bool value) => updateAccessibilitySettings(
+      accessibilitySettings.copyWith(readAloudEnabled: value));
+  void resetAccessibilitySettings() =>
+      updateAccessibilitySettings(const AccessibilitySettings());
+
+  void updateAccessibilitySettings(AccessibilitySettings settings) {
+    accessibilitySettings = settings;
+    _progressRepository.saveAccessibilitySettings(settings);
+    notifyListeners();
+  }
+
+  Future<void> saveUserProfile(UserProfile profile) async {
+    userProfile = profile;
+    await _profileRepository.saveProfile(profile);
+    notifyListeners();
+  }
 }
 
-AppState appState = AppState();
+AppState appState = AppState(
+  profileRepository: InMemoryProfileRepository(),
+);

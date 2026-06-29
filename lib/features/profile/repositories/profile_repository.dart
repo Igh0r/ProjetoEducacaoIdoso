@@ -8,6 +8,20 @@ abstract class ProfileRepository {
   Future<void> saveProfile(UserProfile profile);
 }
 
+class InMemoryProfileRepository implements ProfileRepository {
+  InMemoryProfileRepository([this._profile = const UserProfile()]);
+
+  UserProfile _profile;
+
+  @override
+  UserProfile loadProfile() => _profile;
+
+  @override
+  Future<void> saveProfile(UserProfile profile) async {
+    _profile = profile;
+  }
+}
+
 class LocalProfileRepository implements ProfileRepository {
   LocalProfileRepository({File? file}) : _file = file ?? _defaultFile;
 
@@ -29,7 +43,8 @@ class LocalProfileRepository implements ProfileRepository {
         return _cache = UserProfile.fromJson(decoded);
       }
       if (decoded is Map) {
-        return _cache = UserProfile.fromJson(Map<String, Object?>.from(decoded));
+        return _cache =
+            UserProfile.fromJson(Map<String, Object?>.from(decoded));
       }
     } on FormatException {
       // If local data is corrupt, keep the app usable and let the next save repair it.

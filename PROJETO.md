@@ -93,7 +93,7 @@ flutter test
 - **Sem login real** nesta primeira entrega: reduz complexidade e facilita uso por idosos em protótipos.
 - **Persistência local com SQLite**: progresso e pontuações de quiz são carregados de um banco local ao iniciar o app e atualizados quando uma aula é concluída.
 - **Conteúdo local**: aulas e quizzes ficam embutidos para funcionar offline e sem conta externa.
-- **Sem IA externa**: o assistente usa respostas locais para evitar custo, latência e dependência de internet.
+- **Assistente com fallback local**: o assistente mantém respostas locais determinísticas e pode ser integrado a um provedor GPT por meio de cliente injetável. Se a integração externa não estiver configurada, vier vazia ou falhar, a resposta local é usada para preservar funcionamento offline e previsível.
 
 ## Próximas melhorias sugeridas
 

@@ -1,8 +1,25 @@
 import 'package:educacao_idoso/core/state/app_state.dart';
 import 'package:educacao_idoso/features/profile/models/user_profile.dart';
-class AssistantAnswerService {
-  const AssistantAnswerService();
 
+/// Contrato usado para integrar o assistente a um provedor GPT.
+///
+/// A implementação concreta pode chamar uma API externa, mas os testes usam um
+/// cliente falso para validar o fluxo sem depender de internet, chave de API ou
+/// custo de uso.
+abstract class GptAssistantClient {
+  Future<String?> answer(String question, {UserProfile? profile});
+}
+
+class AssistantAnswerService {
+  const AssistantAnswerService({GptAssistantClient? gptClient})
+      : _gptClient = gptClient;
+
+  final GptAssistantClient? _gptClient;
+
+  /// Responde usando a base local determinística.
+  ///
+  /// Este método permanece síncrono para manter o comportamento offline já
+  /// testado e usado pela interface atual.
   String answerFor(String question, {UserProfile? profile}) {
     final normalizedQuestion = _normalize(question);
 
@@ -13,6 +30,33 @@ class AssistantAnswerService {
     }
 
     return _fallbackAnswer;
+  }
+
+  /// Responde priorizando a integração GPT configurada.
+  ///
+  /// Caso não exista cliente GPT, a resposta venha vazia ou ocorra erro na
+  /// integração, o assistente volta para a resposta local. Assim a experiência
+  /// continua funcional para idosos mesmo sem internet ou serviço externo.
+  Future<String> answerForIntegrated(
+    String question, {
+    UserProfile? profile,
+  }) async {
+    final gptClient = _gptClient;
+    if (gptClient == null) {
+      return answerFor(question, profile: profile);
+    }
+
+    try {
+      final gptAnswer = await gptClient.answer(question, profile: profile);
+      final sanitizedAnswer = gptAnswer?.trim();
+      if (sanitizedAnswer != null && sanitizedAnswer.isNotEmpty) {
+        return sanitizedAnswer;
+      }
+    } catch (_) {
+      // Mantém o assistente seguro e disponível com a base local.
+    }
+
+    return answerFor(question, profile: profile);
   }
 
   String _normalize(String value) {

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:educacao_idoso/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -85,6 +87,58 @@ void main() {
     final answer = await service.answerForIntegrated('Como usar PIX?');
 
     expect(answer, contains('confira'));
+  });
+
+
+  test('monta requisição GPT com instruções seguras e extrai output_text',
+      () async {
+    late Uri requestedUri;
+    late Map<String, String> requestedHeaders;
+    late Map<String, Object?> requestedBody;
+
+    final client = OpenAiResponsesAssistantClient(
+      config: GptAssistantConfig(
+        endpoint: Uri.parse('https://example.com/responses'),
+        apiKey: 'test-key',
+      ),
+      httpPost: (uri, {required headers, required body}) async {
+        requestedUri = uri;
+        requestedHeaders = headers;
+        requestedBody = jsonDecode(body) as Map<String, Object?>;
+        return const GptHttpResponse(
+          statusCode: 200,
+          body: '{"output_text":"Use somente canais oficiais."}',
+        );
+      },
+    );
+
+    final answer = await client.answer(
+      'Como vejo meu benefício?',
+      profile: const UserProfile(name: 'Maria', trustedContactName: 'Ana'),
+    );
+
+    expect(answer, 'Use somente canais oficiais.');
+    expect(requestedUri.toString(), 'https://example.com/responses');
+    expect(requestedHeaders['Authorization'], 'Bearer test-key');
+    expect(requestedBody['model'], 'gpt-5.5');
+    expect(requestedBody['input'], 'Como vejo meu benefício?');
+    expect(requestedBody['instructions'], contains('pessoas idosas no Brasil'));
+    expect(requestedBody['instructions'], contains('Nunca peça senha'));
+    expect(requestedBody['instructions'], contains('Maria'));
+  });
+
+  test('extrai texto de respostas em formato output/content', () async {
+    final client = OpenAiResponsesAssistantClient(
+      config: GptAssistantConfig(endpoint: Uri.parse('https://example.com')),
+      httpPost: (_, {required headers, required body}) async {
+        return const GptHttpResponse(
+          statusCode: 200,
+          body: '{"output":[{"content":[{"text":"Passo 1"},{"text":"Passo 2"}]}]}',
+        );
+      },
+    );
+
+    expect(await client.answer('ajuda'), 'Passo 1\nPasso 2');
   });
 }
 

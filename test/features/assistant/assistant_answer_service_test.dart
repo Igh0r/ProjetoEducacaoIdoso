@@ -88,9 +88,12 @@ void main() {
 }
 
 class _FakeGptAssistantClient implements GptAssistantClient {
-  const _FakeGptAssistantClient({this.answer, this.throwsError = false});
+  const _FakeGptAssistantClient({
+    String? answer,
+    this.throwsError = false,
+  }) : answerText = answer;
 
-  final String? answer;
+  final String? answerText;
   final bool throwsError;
 
   @override
@@ -99,6 +102,6 @@ class _FakeGptAssistantClient implements GptAssistantClient {
       throw Exception('Falha simulada no GPT');
     }
 
-    return answer;
+    return answerText;
   }
 }
